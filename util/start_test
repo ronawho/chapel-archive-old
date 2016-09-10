@@ -96,6 +96,7 @@ def run_tests(tests):
 
     # check for duplicate .graph and .dat files
     check_for_duplicates()
+    exit(0)
 
     # print out Chapel environment
     print_chapel_environment()
@@ -1083,21 +1084,135 @@ def print_chapel_environment():
     logger.write("##########################")
 
 
+def PerfSfx(s):
+    return '.{0}{1}'.format(args.perflabel, s)
+
+# derive .dat file names from a perfcompopts or perfexopts files. files can
+# either specify the basename of the .dat file, or the can specify the full
+# name of a .perfkey file and then the basename of the .perfkey file is used.
+# e.g.:  
+# 
+#   --my_option # my_dat_file_name         # .dat name =  "my_dat_file_name.dat"
+# or  
+#   --my_option # my_perfkey_name.perfkey  # .dat name =  "my_perfkey_name.dat"
+#
+# opt_file is the abs path to the file, returns a list of .dat file names
+def get_dat_names_from_opt_file(opt_file, basename):
+    dat_files = []
+    #print(opt_file)
+    if os.path.isfile(opt_file):
+	with open(opt_file, 'r') as f:
+            lines = f.readlines()
+            lines = [line for line in lines if len(line.strip()) > 0]
+            lines = [line for line in lines if not line.startswith('#')]
+            #print(lines)
+            add_basename = False
+            if '#' in ''.join(lines):
+                add_basename = True
+
+	    for line in lines:
+                explicit_name = None
+		if len(line.split('#')) > 1:
+		    explicit_name = line.split('#')[1].strip()
+                    #explicit_name = explicit_name.replace('.perfkeys', '')
+                elif add_basename: 
+                    explicit_name = basename 
+                if explicit_name:
+                    dat_name = explicit_name
+                    if not explicit_name.endswith(PerfSfx('keys')): 
+                        dat_name = '{0}.dat'.format(explicit_name)
+                    dat_files.append(dat_name)
+    return dat_files
+
+
+def get_dat_name_from_perfkey_file(perfkey_file):
+    if os.path.isfile(perfkey_file):
+        with open(perfkey_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('#'):
+                    comment = line[1:].strip()
+                    if comment[0:5] == "file:":
+                        return comment.split()[1]
+    return  None
+
 def check_for_duplicates():
     # check for .dat duplicates
     if args.performance:
         logger.write("[Checking for duplicate performance data filenames]")
 
-        dat_files = []
-        error = False
+        my_dat_files = []
+        def dat_file_add(dat_file):
+            if dat_file in my_dat_files:
+                logger.write("[Error: Duplicate performance data filenames"
+                        " ({0})".format(dat_file))
+            my_dat_files.append(dat_file)
+
+        operated_on_basename = set()
         for root, dirnames, filenames in os.walk(test_dir):
-            for filename in fnmatch.filter(filenames, "*." + args.perflabel):
-                if filename in dat_files: # duplicate
-                    logger.write("[Error: Duplicate performance data filenames"
-                            " ({0})".format(filename))
-                    error = True
-                else:
-                    dat_files.append(filename)
+            for filename in filenames:
+                suffixes = (perfexecopts, perfcompopts, perfkeys) = (PerfSfx('execopts'), PerfSfx('compopts'), PerfSfx('keys'))
+                basename = filename
+                for suffix in suffixes:
+                    basename = basename.replace(suffix, '')
+                full_basename = os.path.join(root, basename)
+                abs_filename = os.path.join(root, filename)
+
+                if filename.endswith((perfexecopts, perfcompopts)):
+                    for dat_file in get_dat_names_from_opt_file(abs_filename, basename):
+                        if dat_file.endswith(perfkeys):
+                            
+                            full_basename2 = os.path.join(root, dat_file.replace(perfkeys, ''))
+                            if full_basename2 not in operated_on_basename:
+                                operated_on_basename.add(full_basename2)
+
+                                dat_file_add(dat_file.replace(perfkeys, '.dat'))
+                                operated_on_basename.add(full_basename)
+                        else: 
+                            operated_on_basename.add(full_basename)
+                            dat_file_add(dat_file)
+
+                elif filename.endswith(perfkeys):
+                    if full_basename not in operated_on_basename:
+                        dat_file = get_dat_name_from_perfkey_file(abs_filename)
+                        
+                        if not dat_file:
+                           if (os.path.isfile('{0}.chpl'.format(full_basename)) or
+                              os.path.isfile('{0}.test.c'.format(full_basename)) ):
+                                dat_file = filename.replace(perfkeys, '.dat')
+                        if dat_file:
+                            dat_file_add(dat_file)
+                            operated_on_basename.add(full_basename)
+
+
+  #      for dat_file in my_dat_files:
+   #         print(dat_file)
+        dat_files = []
+        checked_set = []
+        error = False
+#        for root, dirnames, filenames in os.walk(test_dir):
+#            for filename in filenames:
+#                if filename.endswith(('.perfkeys', '.perfexecopts')):
+#                    if filename in dat_files: # duplicate
+#                        pass
+#                        #logger.write("[Error: Duplicate performance data filenames"
+#                        #        " ({0})".format(filename))
+#                        #error = True
+#                    else:
+#                        #dat_files.append(filename)
+#                        basename = filename.replace('.perfkeys', '')
+#                        basename = basename.replace('.perfexecopts', '')
+#                        checkname = os.path.join(root, basename);
+#                        if (True or os.path.exists('{0}.chpl'.format(checkname)) or 
+#                           os.path.exists('{0}.test.c'.format(checkname))):
+#                            if not checkname in checked_set:
+#                                checked_set.append(checkname)
+#                                #print(checkname)
+#                                for f in get_dat_name(root, basename):
+#                                    #print('{0}/{1}  {2}'.format(root, os.path.splitext(filename)[0], f))
+#                                    print(f)
+#                                    #pass
+
 
         if error:
             finish()
