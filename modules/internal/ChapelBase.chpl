@@ -923,11 +923,26 @@ module ChapelBase {
     type taskCntType = if !forceLocalTypes && useAtomicTaskCnt then atomic int
                                            else int;
     if forceLocalTypes {
-      return new unmanaged _EndCount(iType=chpl__processorAtomicType(int),
-                                     taskType=taskCntType);
+      var endCount: _EndCount(chpl__processorAtomicType(int), taskCntType);
+      var e = __primitive("stack allocate class", endCount);
+      // TODO surely there's a way to call EndCount initializer instead of
+      // init'ing fields manually.
+      e.i.write(0);
+      if isAtomic(e.taskCnt) then e.taskCnt.write(0); else e.taskCnt = 0;
+      return e;
+      //return new unmanaged _EndCount(iType=chpl__processorAtomicType(int),
+      //                               taskType=taskCntType);
+
     } else {
-      return new unmanaged _EndCount(iType=chpl__atomicType(int),
-                                     taskType=taskCntType);
+      var endCount: _EndCount(chpl__atomicType(int), taskCntType);
+      var e = __primitive("stack allocate class", endCount);
+      // TODO surely there's a way to call EndCount initializer instead of
+      // init'ing fields manually.
+      e.i.write(0);
+      if isAtomic(e.taskCnt) then e.taskCnt.write(0); else e.taskCnt = 0;
+      return e;
+      //return new unmanaged _EndCount(iType=chpl__atomicType(int),
+      //                               taskType=taskCntType);
     }
   }
 
@@ -939,7 +954,7 @@ module ChapelBase {
   // on statement needed.
   pragma "dont disable remote value forwarding"
   inline proc _endCountFree(e: _EndCount) {
-    delete _to_unmanaged(e);
+    //delete _to_unmanaged(e);
   }
 
   // This function is called by the initiating task once for each new
