@@ -1480,7 +1480,7 @@ proc StencilArr.setRADOpt(val=true) {
 //
 // the accessor for the local array -- assumes the index is local
 //
-proc LocStencilArr.this(i) ref {
+inline proc LocStencilArr.this(i) ref {
   return myElems(i);
 }
 

@@ -594,7 +594,7 @@ module ChapelLocale {
   }
 
   pragma "no doc"
-  proc chpl_getPrivatizedCopy(type objectType, objectPid:int): objectType
+  inline proc chpl_getPrivatizedCopy(type objectType, objectPid:int): objectType
     return __primitive("chpl_getPrivatizedClass", nil:objectType, objectPid);
   
 

@@ -1273,7 +1273,7 @@ proc BlockArr.setRADOpt(val=true) {
 //
 // TODO: Should this be inlined?
 //
-proc LocBlockArr.this(i) ref {
+inline proc LocBlockArr.this(i) ref {
   return myElems(i);
 }
 

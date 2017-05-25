@@ -437,6 +437,9 @@ static bool isLoopInvariantPrimitive(PrimitiveOp* primitiveOp)
       case PRIM_SET_SVEC_MEMBER:
       case PRIM_GET_SVEC_MEMBER:
       case PRIM_GET_SVEC_MEMBER_VALUE:        
+      
+      case PRIM_GET_PRIV_CLASS:
+      case PRIM_CAST:
     
       case PRIM_ADDR_OF:            
       case PRIM_DEREF:    
@@ -859,25 +862,25 @@ static void computeLoopInvariants(std::vector<SymExpr*>& loopInvariants, Loop*
     // Note that not all things that are passed by ref will have the ref intent
     // flag, and may just be ref variables. This is a known bug, see comments
     // in addVarsToFormals(): flattenFunctions.cpp.
-    if (isArgSymbol(symExpr->symbol()) &&
-        symExpr->getValType()->symbol->hasFlag(FLAG_ITERATOR_CLASS) == false) {
-      if(ArgSymbol* argSymbol = toArgSymbol(symExpr->symbol())) {
-        if(argSymbol->intent == INTENT_REF ||
-           argSymbol->intent == INTENT_CONST_REF ||
-           isReferenceType(argSymbol->type)) {
-          mightHaveBeenDeffedElseWhere = true;
-        }
-      }
-      for_set(Symbol, aliasSym, aliases[symExpr->symbol()]) {
-        if(ArgSymbol* argSymbol = toArgSymbol(aliasSym)) {
-          if(argSymbol->intent == INTENT_REF ||
-             argSymbol->intent == INTENT_CONST_REF ||
-             isReferenceType(argSymbol->type)) {
-            mightHaveBeenDeffedElseWhere = true;
-          }
-        }
-      }
-    }
+//    if (isArgSymbol(symExpr->symbol()) &&
+//        symExpr->getValType()->symbol->hasFlag(FLAG_ITERATOR_CLASS) == false) {
+//      if(ArgSymbol* argSymbol = toArgSymbol(symExpr->symbol())) {
+//        if(argSymbol->intent == INTENT_REF ||
+//           argSymbol->intent == INTENT_CONST_REF ||
+//           isReferenceType(argSymbol->type)) {
+//          mightHaveBeenDeffedElseWhere = true;
+//        }
+//      }
+//      for_set(Symbol, aliasSym, aliases[symExpr->symbol()]) {
+//        if(ArgSymbol* argSymbol = toArgSymbol(aliasSym)) {
+//          if(argSymbol->intent == INTENT_REF ||
+//             argSymbol->intent == INTENT_CONST_REF ||
+//             isReferenceType(argSymbol->type)) {
+//            mightHaveBeenDeffedElseWhere = true;
+//          }
+//        }
+//      }
+//    }
     // Find where the variable is defined.
     Symbol* defScope = symExpr->symbol()->defPoint->parentSymbol;
     // if the variable is a module level (global) variable
