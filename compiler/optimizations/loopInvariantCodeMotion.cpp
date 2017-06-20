@@ -1090,6 +1090,7 @@ static bool containsSynchronizationVar(BaseAST* ast) {
  * singles. 
  */
 static bool canPerformCodeMotion(Loop* loop) {
+  return true;
   
   for_vector(BasicBlock, block, *loop->getBlocks()) {
     for_vector(Expr, expr, block->exprs) {
