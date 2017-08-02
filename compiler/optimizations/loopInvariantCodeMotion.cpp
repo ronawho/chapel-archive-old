@@ -1042,6 +1042,14 @@ static bool defPointInLoop(Loop* loop, SymExpr* symExpr) {
   return false;
 }
 
+static bool callExprInLoop(Loop* loop, CallExpr* callExpr) {
+  if (callExpr->parentExpr == loop->getLoopAST()) {
+    return true;
+  }
+  return false;
+}
+
+
 
 /*
  * Collects the uses and defs of symbols the baseAST
@@ -1201,11 +1209,15 @@ void loopInvariantCodeMotion(void) {
       for_vector(SymExpr, symExpr, loopInvariants) {
         if(CallExpr* call = toCallExpr(symExpr->parentExpr)) {
           if(defDominatesAllUses(curLoop, symExpr, dominators, localMap, localUseMap)) {
-            if(defPointInLoop(curLoop, symExpr) || defDominatesAllExits(curLoop, symExpr, dominators, localMap)) {
-              curLoop->insertBefore(symExpr->symbol()->defPoint);
-              curLoop->insertBefore(call);
+            if(callExprInLoop(curLoop, call)) {
+              if(defPointInLoop(curLoop, symExpr) || defDominatesAllExits(curLoop, symExpr, dominators, localMap)) {
+                if(defPointInLoop(curLoop, symExpr)) {
+                  curLoop->insertBefore(symExpr->symbol()->defPoint);
+                }
+                curLoop->insertBefore(call);
+              }
             }
-          }   
+          }
         }
       }
                 
