@@ -110,11 +110,10 @@ public:
       delete bitExits;
     }
 
-
+    // Check if an expr is inside this loop (or in the init/test/incr cluase of
+    // a CForLoop)
     bool astInLoop(Expr* expr) {
       if (header->exprs.size() != 0) {
-	// find the first expr in the header, and get it's parent expr (for
-	// most cases it will be the surrounding block statement of the loop)
 	if (BlockStmt* blockStmt = toBlockStmt(header->exprs.at(0)->parentExpr)) {
 	  if (blockStmt->isLoopStmt()) {
 	    return expr->parentExpr == blockStmt;
@@ -125,7 +124,6 @@ public:
       }
       return false;
     }
-
 
     // Get the BlockStmt AST that corresponds to this BasicBlock representation
     // of the loop
@@ -1046,26 +1044,6 @@ static bool defDominatesAllExits(Loop* loop, SymExpr* def, std::vector<BitVec*>&
 
 
 /*
- * Check if a symExpr's defPoint is in the current loop. If it is, we don't
- * need to check if definitions dominate all exists since the variable can't be
- * live past the loop.
- */
-static bool defPointInLoop(Loop* loop, SymExpr* symExpr) {
-  if (VarSymbol* vSymbol = toVarSymbol(symExpr->symbol())) {
-    if (vSymbol->defPoint->parentExpr == loop->getLoopAST()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-static bool callExprInLoop(Loop* loop, CallExpr* callExpr) {
-  return loop->astInLoop(callExpr);
-}
-
-
-
-/*
  * Collects the uses and defs of symbols the baseAST
  * and checks for any synchronization variables such as
  * atomics, syncs, and singles.
@@ -1223,9 +1201,10 @@ void loopInvariantCodeMotion(void) {
       for_vector(SymExpr, symExpr, loopInvariants) {
         if(CallExpr* call = toCallExpr(symExpr->parentExpr)) {
           if(defDominatesAllUses(curLoop, symExpr, dominators, localMap, localUseMap)) {
-            if(callExprInLoop(curLoop, call)) {
-              if(defPointInLoop(curLoop, symExpr) || defDominatesAllExits(curLoop, symExpr, dominators, localMap)) {
-                if(defPointInLoop(curLoop, symExpr)) {
+            if(curLoop->astInLoop(call)) {
+              bool defPointInLoop = curLoop->astInLoop(symExpr->symbol()->defPoint);
+              if(defPointInLoop || defDominatesAllExits(curLoop, symExpr, dominators, localMap)) {
+                if(defPointInLoop) {
                   curLoop->insertBefore(symExpr->symbol()->defPoint);
                 }
                 curLoop->insertBefore(call);
