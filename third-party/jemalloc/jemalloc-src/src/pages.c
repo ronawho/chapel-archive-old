@@ -25,6 +25,11 @@ static int	mmap_flags;
 #endif
 static bool	os_overcommits;
 
+bool thp_state_madvise;
+
+/* Runtime support for lazy purge. Irrelevant when !pages_can_purge_lazy. */
+static bool pages_can_purge_lazy_runtime = true;
+
 /******************************************************************************/
 /*
  * Function prototypes for static functions that are referenced prior to
@@ -252,6 +257,13 @@ pages_purge_lazy(void *addr, size_t size) {
 	if (!pages_can_purge_lazy) {
 		return true;
 	}
+	if (!pages_can_purge_lazy_runtime) {
+		/*
+		 * Built with lazy purge enabled, but detected it was not
+		 * supported on the current system.
+		 */
+		return true;
+	}
 
 #ifdef _WIN32
 	VirtualAlloc(addr, size, MEM_RESET, PAGE_READWRITE);
@@ -291,7 +303,7 @@ pages_huge(void *addr, size_t size) {
 	assert(HUGEPAGE_ADDR2BASE(addr) == addr);
 	assert(HUGEPAGE_CEILING(size) == size);
 
-#ifdef JEMALLOC_THP
+#ifdef JEMALLOC_HAVE_MADVISE_HUGE
 	return (madvise(addr, size, MADV_HUGEPAGE) != 0);
 #else
 	return true;
@@ -303,7 +315,7 @@ pages_nohuge(void *addr, size_t size) {
 	assert(HUGEPAGE_ADDR2BASE(addr) == addr);
 	assert(HUGEPAGE_CEILING(size) == size);
 
-#ifdef JEMALLOC_THP
+#ifdef JEMALLOC_HAVE_MADVISE_HUGE
 	return (madvise(addr, size, MADV_NOHUGEPAGE) != 0);
 #else
 	return false;
@@ -353,14 +365,37 @@ os_overcommits_proc(void) {
 	ssize_t nread;
 
 #if defined(JEMALLOC_USE_SYSCALL) && defined(SYS_open)
-	fd = (int)syscall(SYS_open, "/proc/sys/vm/overcommit_memory", O_RDONLY |
-	    O_CLOEXEC);
+	#if defined(O_CLOEXEC)
+		fd = (int)syscall(SYS_open, "/proc/sys/vm/overcommit_memory", O_RDONLY |
+			O_CLOEXEC);
+	#else
+		fd = (int)syscall(SYS_open, "/proc/sys/vm/overcommit_memory", O_RDONLY);
+		if (fd != -1) {
+			fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+		}
+	#endif
 #elif defined(JEMALLOC_USE_SYSCALL) && defined(SYS_openat)
-	fd = (int)syscall(SYS_openat,
-	    AT_FDCWD, "/proc/sys/vm/overcommit_memory", O_RDONLY | O_CLOEXEC);
+	#if defined(O_CLOEXEC)
+		fd = (int)syscall(SYS_openat,
+			AT_FDCWD, "/proc/sys/vm/overcommit_memory", O_RDONLY | O_CLOEXEC);
+	#else
+		fd = (int)syscall(SYS_openat,
+			AT_FDCWD, "/proc/sys/vm/overcommit_memory", O_RDONLY);
+		if (fd != -1) {
+			fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+		}
+	#endif
 #else
-	fd = open("/proc/sys/vm/overcommit_memory", O_RDONLY | O_CLOEXEC);
+	#if defined(O_CLOEXEC)
+		fd = open("/proc/sys/vm/overcommit_memory", O_RDONLY | O_CLOEXEC);
+	#else
+		fd = open("/proc/sys/vm/overcommit_memory", O_RDONLY);
+		if (fd != -1) {
+			fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+		}
+	#endif
 #endif
+
 	if (fd == -1) {
 		return false; /* Error. */
 	}
@@ -390,6 +425,52 @@ os_overcommits_proc(void) {
 }
 #endif
 
+static void
+init_thp_state(void) {
+	if (!have_madvise_huge) {
+		if (metadata_thp_enabled() && opt_abort) {
+			malloc_write("<jemalloc>: no MADV_HUGEPAGE support\n");
+			abort();
+		}
+		goto label_error;
+	}
+
+	static const char madvise_state[] = "always [madvise] never\n";
+	char buf[sizeof(madvise_state)];
+
+#if defined(JEMALLOC_USE_SYSCALL) && defined(SYS_open)
+	int fd = (int)syscall(SYS_open,
+	    "/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY);
+#else
+	int fd = open("/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY);
+#endif
+	if (fd == -1) {
+		goto label_error;
+	}
+
+#if defined(JEMALLOC_USE_SYSCALL) && defined(SYS_read)
+	ssize_t nread = (ssize_t)syscall(SYS_read, fd, &buf, sizeof(buf));
+#else
+	ssize_t nread = read(fd, &buf, sizeof(buf));
+#endif
+
+#if defined(JEMALLOC_USE_SYSCALL) && defined(SYS_close)
+	syscall(SYS_close, fd);
+#else
+	close(fd);
+#endif
+
+	if (nread < 1) {
+		goto label_error;
+	}
+	if (strncmp(buf, madvise_state, (size_t)nread) == 0) {
+		thp_state_madvise = true;
+		return;
+	}
+label_error:
+	thp_state_madvise = false;
+}
+
 bool
 pages_boot(void) {
 	os_page = os_page_detect();
@@ -417,6 +498,22 @@ pages_boot(void) {
 #else
 	os_overcommits = false;
 #endif
+
+	init_thp_state();
+
+	/* Detect lazy purge runtime support. */
+	if (pages_can_purge_lazy) {
+		bool committed = false;
+		void *madv_free_page = os_pages_map(NULL, PAGE, PAGE, &committed);
+		if (madv_free_page == NULL) {
+			return true;
+		}
+		assert(pages_can_purge_lazy_runtime);
+		if (pages_purge_lazy(madv_free_page, PAGE)) {
+			pages_can_purge_lazy_runtime = false;
+		}
+		os_pages_unmap(madv_free_page, PAGE);
+	}
 
 	return false;
 }

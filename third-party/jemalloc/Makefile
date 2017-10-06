@@ -37,7 +37,7 @@ endif
 
 # To work around a problem with jemalloc's auto-detection of version
 # from git history & out-of-tree builds, explicitly set the version
-CHPL_JEMALLOC_CFG_OPTIONS += --with-version=`cat $(JEMALLOC_SUBDIR)/VERSION`
+CHPL_JEMALLOC_CFG_OPTIONS += --with-version=5.0.1-0-g896ed3a8b3f41998d4fb4d625d30ac63ef2d51fb
 
 
 CHPL_JEMALLOC_CFG_OPTIONS += $(CHPL_JEMALLOC_MORE_CFG_OPTIONS)

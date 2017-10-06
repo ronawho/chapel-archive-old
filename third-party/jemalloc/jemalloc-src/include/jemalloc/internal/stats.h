@@ -5,7 +5,6 @@
 #include "jemalloc/internal/mutex_prof.h"
 #include "jemalloc/internal/mutex.h"
 #include "jemalloc/internal/size_classes.h"
-#include "jemalloc/internal/stats_tsd.h"
 
 /*  OPTION(opt,		var_name,	default,	set_value_to) */
 #define STATS_PRINT_OPTIONS						\
@@ -143,6 +142,7 @@ typedef struct arena_stats_s {
 	atomic_zu_t		base; /* Derived. */
 	atomic_zu_t		internal;
 	atomic_zu_t		resident; /* Derived. */
+	atomic_zu_t		metadata_thp;
 
 	atomic_zu_t		allocated_large; /* Derived. */
 	arena_stats_u64_t	nmalloc_large; /* Derived. */

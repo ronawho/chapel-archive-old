@@ -33,6 +33,8 @@
  * order to yield to another virtual CPU.
  */
 #undef CPU_SPINWAIT
+/* 1 if CPU_SPINWAIT is defined, 0 otherwise. */
+#undef HAVE_CPU_SPINWAIT
 
 /*
  * Number of significant bits in virtual addresses.  This may be less than the
@@ -238,6 +240,12 @@
 #undef JEMALLOC_CACHE_OBLIVIOUS
 
 /*
+ * If defined, enable logging facilities.  We make this a configure option to
+ * avoid taking extra branches everywhere.
+ */
+#undef JEMALLOC_LOG
+
+/*
  * Darwin (OS X) uses zones to work around Mach-O symbol override shortcomings.
  */
 #undef JEMALLOC_ZONE
@@ -253,6 +261,12 @@
 
 /* Defined if madvise(2) is available. */
 #undef JEMALLOC_HAVE_MADVISE
+
+/*
+ * Defined if transparent huge pages are supported via the MADV_[NO]HUGEPAGE
+ * arguments to madvise(2).
+ */
+#undef JEMALLOC_HAVE_MADVISE_HUGE
 
 /*
  * Methods for purging unused pages differ between operating systems.

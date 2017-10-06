@@ -157,6 +157,8 @@ TEST_BEGIN(test_mallctl_opt) {
 } while (0)
 
 	TEST_MALLCTL_OPT(bool, abort, always);
+	TEST_MALLCTL_OPT(bool, abort_conf, always);
+	TEST_MALLCTL_OPT(const char *, metadata_thp, always);
 	TEST_MALLCTL_OPT(bool, retain, always);
 	TEST_MALLCTL_OPT(const char *, dss, always);
 	TEST_MALLCTL_OPT(unsigned, narenas, always);

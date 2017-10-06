@@ -635,6 +635,7 @@ jemalloc_version_bugfix
 jemalloc_version_minor
 jemalloc_version_major
 jemalloc_version
+enable_log
 enable_cache_oblivious
 enable_xmalloc
 enable_utrace
@@ -679,6 +680,7 @@ LD_PRELOAD_VAR
 RPATH
 abi
 AWK
+NM
 AR
 host_os
 host_vendor
@@ -742,7 +744,6 @@ infodir
 docdir
 oldincludedir
 includedir
-runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -786,6 +787,7 @@ enable_fill
 enable_utrace
 enable_xmalloc
 enable_cache_oblivious
+enable_log
 with_lg_quantum
 with_lg_page
 with_lg_hugepage
@@ -846,7 +848,6 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
-runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1099,15 +1100,6 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
-  -runstatedir | --runstatedir | --runstatedi | --runstated \
-  | --runstate | --runstat | --runsta | --runst | --runs \
-  | --run | --ru | --r)
-    ac_prev=runstatedir ;;
-  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
-  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
-  | --run=* | --ru=* | --r=*)
-    runstatedir=$ac_optarg ;;
-
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1245,7 +1237,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir runstatedir
+		libdir localedir mandir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1398,7 +1390,6 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
-  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1444,6 +1435,7 @@ Optional Features:
   --disable-cache-oblivious
                           Disable support for cache-oblivious allocation
                           alignment
+  --enable-log            Support debug logging
   --disable-syscall       Disable use of syscall(2)
   --enable-lazy-lock      Enable lazy locking (only lock when multi-threaded)
   --disable-thp           Disable transparent huge page support
@@ -3905,6 +3897,57 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   je_cv_cflags_added=-Wundef
+              { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  je_cv_cflags_added=
+              { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+              CONFIGURE_CFLAGS="${T_CONFIGURE_CFLAGS}"
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test "x${CONFIGURE_CFLAGS}" = "x" -o "x${SPECIFIED_CFLAGS}" = "x" ; then
+  CFLAGS="${CONFIGURE_CFLAGS}${SPECIFIED_CFLAGS}"
+else
+  CFLAGS="${CONFIGURE_CFLAGS} ${SPECIFIED_CFLAGS}"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether compiler supports -Wno-format-zero-length" >&5
+$as_echo_n "checking whether compiler supports -Wno-format-zero-length... " >&6; }
+T_CONFIGURE_CFLAGS="${CONFIGURE_CFLAGS}"
+T_APPEND_V=-Wno-format-zero-length
+  if test "x${CONFIGURE_CFLAGS}" = "x" -o "x${T_APPEND_V}" = "x" ; then
+  CONFIGURE_CFLAGS="${CONFIGURE_CFLAGS}${T_APPEND_V}"
+else
+  CONFIGURE_CFLAGS="${CONFIGURE_CFLAGS} ${T_APPEND_V}"
+fi
+
+
+if test "x${CONFIGURE_CFLAGS}" = "x" -o "x${SPECIFIED_CFLAGS}" = "x" ; then
+  CFLAGS="${CONFIGURE_CFLAGS}${SPECIFIED_CFLAGS}"
+else
+  CFLAGS="${CONFIGURE_CFLAGS} ${SPECIFIED_CFLAGS}"
+fi
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+
+    return 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  je_cv_cflags_added=-Wno-format-zero-length
               { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
@@ -6788,6 +6831,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 CPU_SPINWAIT=""
 case "${host_cpu}" in
   i686|x86_64)
+	HAVE_CPU_SPINWAIT=1
 	if test "x${je_cv_msvc}" = "xyes" ; then
 	    if ${je_cv_pause_msvc+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -6864,16 +6908,14 @@ fi
 	    fi
 	fi
 	;;
-  powerpc*)
-	cat >>confdefs.h <<_ACEOF
-#define HAVE_ALTIVEC
-_ACEOF
-
-	CPU_SPINWAIT='__asm__ volatile("or 31,31,31")'
-	;;
   *)
+	HAVE_CPU_SPINWAIT=0
 	;;
 esac
+cat >>confdefs.h <<_ACEOF
+#define HAVE_CPU_SPINWAIT $HAVE_CPU_SPINWAIT
+_ACEOF
+
 cat >>confdefs.h <<_ACEOF
 #define CPU_SPINWAIT $CPU_SPINWAIT
 _ACEOF
@@ -7108,6 +7150,102 @@ else
 fi
 
 
+
+
+
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}nm", so it can be a program name with args.
+set dummy ${ac_tool_prefix}nm; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_NM+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$NM"; then
+  ac_cv_prog_NM="$NM" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_NM="${ac_tool_prefix}nm"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+NM=$ac_cv_prog_NM
+if test -n "$NM"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NM" >&5
+$as_echo "$NM" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_NM"; then
+  ac_ct_NM=$NM
+  # Extract the first word of "nm", so it can be a program name with args.
+set dummy nm; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_NM+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_NM"; then
+  ac_cv_prog_ac_ct_NM="$ac_ct_NM" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_NM="nm"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_NM=$ac_cv_prog_ac_ct_NM
+if test -n "$ac_ct_NM"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_NM" >&5
+$as_echo "$ac_ct_NM" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_ct_NM" = x; then
+    NM=":"
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    NM=$ac_ct_NM
+  fi
+else
+  NM="$ac_cv_prog_NM"
+fi
+
+
 for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -7153,7 +7291,7 @@ done
 
 default_retain="0"
 maps_coalesce="1"
-DUMP_SYMS="nm -a"
+DUMP_SYMS="${NM} -a"
 SYM_PREFIX=""
 case "${host}" in
   *-*-darwin* | *-*-ios*)
@@ -7209,7 +7347,7 @@ fi
 	  default_retain="1"
 	fi
 	;;
-  *-*-linux* | *-*-kfreebsd*)
+  *-*-linux*)
 		T_APPEND_V=-D_GNU_SOURCE
   if test "x${CPPFLAGS}" = "x" -o "x${T_APPEND_V}" = "x" ; then
   CPPFLAGS="${CPPFLAGS}${T_APPEND_V}"
@@ -7232,6 +7370,25 @@ fi
 	if test "${LG_SIZEOF_PTR}" = "3"; then
 	  default_retain="1"
 	fi
+	;;
+  *-*-kfreebsd*)
+		T_APPEND_V=-D_GNU_SOURCE
+  if test "x${CPPFLAGS}" = "x" -o "x${T_APPEND_V}" = "x" ; then
+  CPPFLAGS="${CPPFLAGS}${T_APPEND_V}"
+else
+  CPPFLAGS="${CPPFLAGS} ${T_APPEND_V}"
+fi
+
+
+	abi="elf"
+	$as_echo "#define JEMALLOC_HAS_ALLOCA_H 1" >>confdefs.h
+
+	$as_echo "#define JEMALLOC_SYSCTL_VM_OVERCOMMIT  " >>confdefs.h
+
+	$as_echo "#define JEMALLOC_THREADED_INIT  " >>confdefs.h
+
+	$as_echo "#define JEMALLOC_USE_CXX_THROW  " >>confdefs.h
+
 	;;
   *-*-netbsd*)
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ABI" >&5
@@ -7310,7 +7467,13 @@ fi
 	  DSO_LDFLAGS="-shared"
 	  link_whole_archive="1"
 	fi
-	DUMP_SYMS="dumpbin /SYMBOLS"
+	case "${host}" in
+	  *-*-cygwin*)
+	    DUMP_SYMS="dumpbin /SYMBOLS"
+	    ;;
+	  *)
+	    ;;
+	esac
 	a="lib"
 	libprefix=""
 	SOREV="${so}"
@@ -9583,6 +9746,24 @@ if test "x$enable_cache_oblivious" = "x1" ; then
 fi
 
 
+# Check whether --enable-log was given.
+if test "${enable_log+set}" = set; then :
+  enableval=$enable_log; if test "x$enable_log" = "xno" ; then
+  enable_log="0"
+else
+  enable_log="1"
+fi
+
+else
+  enable_log="0"
+
+fi
+
+if test "x$enable_log" = "x1" ; then
+  $as_echo "#define JEMALLOC_LOG  " >>confdefs.h
+
+fi
+
 
 
 
@@ -11099,6 +11280,10 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $je_cv_thp" >&5
 $as_echo "$je_cv_thp" >&6; }
 
+  if test "x${je_cv_thp}" = "xyes" ; then
+    $as_echo "#define JEMALLOC_HAVE_MADVISE_HUGE  " >>confdefs.h
+
+  fi
 fi
 
 # Check whether --enable-thp was given.
@@ -13173,6 +13358,8 @@ $as_echo "fill               : ${enable_fill}" >&6; }
 $as_echo "utrace             : ${enable_utrace}" >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: xmalloc            : ${enable_xmalloc}" >&5
 $as_echo "xmalloc            : ${enable_xmalloc}" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: log                : ${enable_log}" >&5
+$as_echo "log                : ${enable_log}" >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: lazy_lock          : ${enable_lazy_lock}" >&5
 $as_echo "lazy_lock          : ${enable_lazy_lock}" >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: cache-oblivious    : ${enable_cache_oblivious}" >&5

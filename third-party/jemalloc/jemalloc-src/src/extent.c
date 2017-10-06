@@ -117,7 +117,7 @@ static void extent_record(tsdn_t *tsdn, arena_t *arena,
 
 /******************************************************************************/
 
-rb_gen(UNUSED, extent_avail_, extent_tree_t, extent_t, rb_link,
+ph_gen(UNUSED, extent_avail_, extent_tree_t, extent_t, ph_link,
     extent_esnead_comp)
 
 typedef enum {
@@ -1028,7 +1028,18 @@ extent_alloc_default(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
 static void
 extent_hook_pre_reentrancy(tsdn_t *tsdn, arena_t *arena) {
 	tsd_t *tsd = tsdn_null(tsdn) ? tsd_fetch() : tsdn_tsd(tsdn);
-	pre_reentrancy(tsd, arena);
+	if (arena == arena_get(tsd_tsdn(tsd), 0, false)) {
+		/*
+		 * The only legitimate case of customized extent hooks for a0 is
+		 * hooks with no allocation activities.  One such example is to
+		 * place metadata on pre-allocated resources such as huge pages.
+		 * In that case, rely on reentrancy_level checks to catch
+		 * infinite recursions.
+		 */
+		pre_reentrancy(tsd, NULL);
+	} else {
+		pre_reentrancy(tsd, arena);
+	}
 }
 
 static void
@@ -1296,6 +1307,15 @@ extent_alloc_wrapper(tsdn_t *tsdn, arena_t *arena,
 	extent_t *extent = extent_alloc_retained(tsdn, arena, r_extent_hooks,
 	    new_addr, size, pad, alignment, slab, szind, zero, commit);
 	if (extent == NULL) {
+		if (opt_retain && new_addr != NULL) {
+			/*
+			 * When retain is enabled and new_addr is set, we do not
+			 * attempt extent_alloc_wrapper_hard which does mmap
+			 * that is very unlikely to succeed (unless it happens
+			 * to be at the end).
+			 */
+			return NULL;
+		}
 		extent = extent_alloc_wrapper_hard(tsdn, arena, r_extent_hooks,
 		    new_addr, size, pad, alignment, slab, szind, zero, commit);
 	}

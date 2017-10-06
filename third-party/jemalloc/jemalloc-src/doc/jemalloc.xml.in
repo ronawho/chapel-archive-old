@@ -916,6 +916,20 @@ mallctl("arena." STRINGIFY(MALLCTL_ARENAS_ALL) ".decay",
         </para></listitem>
       </varlistentry>
 
+      <varlistentry id="opt.metadata_thp">
+        <term>
+          <mallctl>opt.metadata_thp</mallctl>
+          (<type>const char *</type>)
+          <literal>r-</literal>
+        </term>
+        <listitem><para>Controls whether to allow jemalloc to use transparent
+        huge page (THP) for internal metadata (see <link
+        linkend="stats.metadata">stats.metadata</link>).  <quote>always</quote>
+        allows such usage.  <quote>auto</quote> uses no THP initially, but may
+        begin to do so when metadata usage reaches certain level.  The default
+        is <quote>disabled</quote>.</para></listitem>
+      </varlistentry>
+
       <varlistentry id="opt.retain">
         <term>
           <mallctl>opt.retain</mallctl>
@@ -1022,7 +1036,7 @@ mallctl("arena." STRINGIFY(MALLCTL_ARENAS_ALL) ".decay",
         The default decay time is 10 seconds.  See <link
         linkend="arenas.dirty_decay_ms"><mallctl>arenas.dirty_decay_ms</mallctl></link>
         and <link
-        linkend="arena.i.muzzy_decay_ms"><mallctl>arena.&lt;i&gt;.muzzy_decay_ms</mallctl></link>
+        linkend="arena.i.dirty_decay_ms"><mallctl>arena.&lt;i&gt;.dirty_decay_ms</mallctl></link>
         for related dynamic control options.  See <link
         linkend="opt.muzzy_decay_ms"><mallctl>opt.muzzy_decay_ms</mallctl></link>
         for a description of muzzy pages.</para></listitem>
@@ -2187,7 +2201,24 @@ struct extent_hooks_s {
         metadata structures (see <link
         linkend="stats.arenas.i.base"><mallctl>stats.arenas.&lt;i&gt;.base</mallctl></link>)
         and internal allocations (see <link
-        linkend="stats.arenas.i.internal"><mallctl>stats.arenas.&lt;i&gt;.internal</mallctl></link>).</para></listitem>
+        linkend="stats.arenas.i.internal"><mallctl>stats.arenas.&lt;i&gt;.internal</mallctl></link>).
+        Transparent huge page (enabled with <link
+        linkend="opt.metadata_thp">opt.metadata_thp</link>) usage is not
+        considered.</para></listitem>
+      </varlistentry>
+
+      <varlistentry id="stats.metadata_thp">
+        <term>
+          <mallctl>stats.metadata_thp</mallctl>
+          (<type>size_t</type>)
+          <literal>r-</literal>
+          [<option>--enable-stats</option>]
+        </term>
+        <listitem><para>Number of transparent huge pages (THP) used for
+        metadata.  See <link
+        linkend="stats.metadata"><mallctl>stats.metadata</mallctl></link> and
+        <link linkend="opt.metadata_thp">opt.metadata_thp</link>) for
+        details.</para></listitem>
       </varlistentry>
 
       <varlistentry id="stats.resident">
@@ -2504,6 +2535,18 @@ struct extent_hooks_s {
         Internal allocations differ from application-originated allocations in
         that they are for internal use, and that they are omitted from heap
         profiles.</para></listitem>
+      </varlistentry>
+
+      <varlistentry id="stats.arenas.i.metadata_thp">
+        <term>
+          <mallctl>stats.arenas.&lt;i&gt;.metadata_thp</mallctl>
+          (<type>size_t</type>)
+          <literal>r-</literal>
+          [<option>--enable-stats</option>]
+        </term>
+        <listitem><para>Number of transparent huge pages (THP) used for
+        metadata.  See <link linkend="opt.metadata_thp">opt.metadata_thp</link>
+        for details.</para></listitem>
       </varlistentry>
 
       <varlistentry id="stats.arenas.i.resident">
