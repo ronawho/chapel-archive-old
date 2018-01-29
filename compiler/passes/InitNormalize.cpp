@@ -61,7 +61,8 @@ InitNormalize::InitNormalize(BlockStmt* block, const InitNormalize& curr) {
       mBlockType = cBlockCobegin;
 
     } else if (blockInfo->isPrimitive(PRIM_BLOCK_COFORALL)    == true ||
-               blockInfo->isPrimitive(PRIM_BLOCK_COFORALL_ON) == true) {
+               blockInfo->isPrimitive(PRIM_BLOCK_COFORALL_ON) == true ||
+               blockInfo->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON) == true) {
       mBlockType = cBlockCoforall;
 
     } else if (blockInfo->isPrimitive(PRIM_BLOCK_ON) == true) {

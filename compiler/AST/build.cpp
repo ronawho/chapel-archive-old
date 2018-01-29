@@ -1588,7 +1588,11 @@ static BlockStmt* buildLoweredCoforall(Expr* indices,
   // just do a remote fork instead of creating a task locally. Do not count
   // running tasks locally, and use network atomic EndCounts if available
   if (onBlock) {
-    onBlock->blockInfoGet()->primitive = primitives[PRIM_BLOCK_COFORALL_ON];
+    if (bounded) {
+      onBlock->blockInfoGet()->primitive = primitives[PRIM_BLOCK_BOUNDED_COFORALL_ON];
+    } else {
+      onBlock->blockInfoGet()->primitive = primitives[PRIM_BLOCK_COFORALL_ON];
+    }
     // Note: gNil is here so error handling can be added by compiler
     // in parallel pass.
     onBlock->insertAtTail(new CallExpr("_downEndCount", coforallCount, gNil));

@@ -1267,7 +1267,7 @@ module ChapelBase {
   }
 
   // implements 'delete' statement
-  inline proc chpl__delete(arg)
+  proc chpl__delete(arg)
     where isClassType(arg.type) || isExternClassType(arg.type) {
 
     if chpl_isDdata(arg.type) then

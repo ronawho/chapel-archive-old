@@ -66,6 +66,7 @@ symbolFlag( FLAG_CHPL__ITER , npr, "chpl__iter", "used as a marker to implement 
 symbolFlag( FLAG_CHPL__ITER_NEWSTYLE , npr, "chpl__iter_newstyle", ncm )
 symbolFlag( FLAG_COBEGIN_OR_COFORALL , npr, "cobegin or coforall" , ncm )
 symbolFlag( FLAG_COBEGIN_OR_COFORALL_BLOCK , npr, "cobegin or coforall block" , ncm )
+symbolFlag( FLAG_BOUNDED_COFORALL_BLOCK , npr, "bounded coforall block" , ncm )
 symbolFlag( FLAG_COERCE_TEMP , npr, "coerce temp" , "a temporary that was stores the result of a coercion" )
 symbolFlag( FLAG_CODEGENNED , npr, "codegenned" , "code has been generated for this type" )
 symbolFlag( FLAG_COFORALL_INDEX_VAR , npr, "coforall index var" , ncm )

@@ -759,7 +759,8 @@ void createTaskFunctions(void) {
       } else if (info->isPrimitive(PRIM_BLOCK_ON) ||
                  info->isPrimitive(PRIM_BLOCK_BEGIN_ON) ||
                  info->isPrimitive(PRIM_BLOCK_COBEGIN_ON) ||
-                 info->isPrimitive(PRIM_BLOCK_COFORALL_ON)) {
+                 info->isPrimitive(PRIM_BLOCK_COFORALL_ON) ||
+                 info->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON)) {
         fn = new FnSymbol("on_fn");
         fn->addFlag(FLAG_ON);
 
@@ -793,9 +794,13 @@ void createTaskFunctions(void) {
           fn->addFlag(FLAG_BEGIN);
         }
         if (info->isPrimitive(PRIM_BLOCK_COBEGIN_ON) ||
-            info->isPrimitive(PRIM_BLOCK_COFORALL_ON)) {
+            info->isPrimitive(PRIM_BLOCK_COFORALL_ON) ||
+            info->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON)) {
           fn->addFlag(FLAG_NON_BLOCKING);
           fn->addFlag(FLAG_COBEGIN_OR_COFORALL);
+        }
+        if(info->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON)) {
+          fn->addFlag(FLAG_BOUNDED_COFORALL_BLOCK);
         }
 
         ArgSymbol* arg = new ArgSymbol(INTENT_CONST_IN, "dummy_locale_arg", dtLocaleID);
@@ -851,6 +856,7 @@ void createTaskFunctions(void) {
              PRIM_BLOCK_BEGIN_ON
              PRIM_BLOCK_COBEGIN_ON
              PRIM_BLOCK_COFORALL_ON
+             PRIM_BLOCK_BOUNDED_COFORALL_ON
              PRIM_BLOCK_BEGIN
                since upEndCount takes care of it. */
 

@@ -129,4 +129,17 @@ module LocaleModelHelpFlat {
       }
     }
   }
+  
+  pragma "insert line file info"
+  export
+  proc chpl_executeBulkOnNB(numTasks: int,                      // number of tasks
+                            loc: c_ptr(chpl_localeID_t),        // target locales
+                            fn: int,                            // on-body function idx
+                            args: c_ptr(chpl_comm_on_bundle_p), // function args
+                            args_size: size_t                   // args size
+                           ) {
+    for i in 0..numTasks-1 {
+      chpl_executeOnNB(loc[i], fn, args[i], args_size);
+    }
+  }
 }

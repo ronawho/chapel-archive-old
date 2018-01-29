@@ -246,6 +246,7 @@ void CallExpr::verify() {
     case PRIM_BLOCK_BEGIN_ON:
     case PRIM_BLOCK_COBEGIN_ON:
     case PRIM_BLOCK_COFORALL_ON:
+    case PRIM_BLOCK_BOUNDED_COFORALL_ON:
     case PRIM_BLOCK_LOCAL:
       if (isBlockStmt(parentExpr) == false) {
         INT_FATAL(this, "blockInfo-type CallExpr not in a BlockStmt");

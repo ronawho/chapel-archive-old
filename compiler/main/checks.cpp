@@ -667,6 +667,7 @@ checkTaskRemovedPrims()
        case PRIM_BLOCK_BEGIN_ON:
        case PRIM_BLOCK_COBEGIN_ON:
        case PRIM_BLOCK_COFORALL_ON:
+       case PRIM_BLOCK_BOUNDED_COFORALL_ON:
         if (call->parentSymbol)
           INT_FATAL("Primitive should no longer be in AST");
         break;

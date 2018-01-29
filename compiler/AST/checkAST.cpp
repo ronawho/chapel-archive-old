@@ -274,6 +274,7 @@ void checkPrimitives()
      case PRIM_BLOCK_BEGIN_ON:
      case PRIM_BLOCK_COBEGIN_ON:
      case PRIM_BLOCK_COFORALL_ON:
+     case PRIM_BLOCK_BOUNDED_COFORALL_ON:
      case PRIM_BLOCK_LOCAL:             // BlockStmt::blockInfo - local block
      case PRIM_BLOCK_UNLOCAL:           // BlockStmt::blockInfo - unlocal local block
      case PRIM_CALL_DESTRUCTOR:         // call destructor on type (do not free)

@@ -35,7 +35,7 @@
 #include "stringutil.h"
 #include "symbol.h"
 #include "wellknown.h"
-
+#include "LoopStmt.h"
 // Notes on
 //   makeHeapAllocations()    //invoked from parallel()
 //   insertWideReferences()
@@ -402,6 +402,17 @@ bundleArgs(CallExpr* fcall, BundleArgsFnData &baData) {
   // Don't destroy rt hdr.
   baData.needsDestroy.push_back(false);
 
+  if (fn->hasFlag(FLAG_BOUNDED_COFORALL_BLOCK)) {
+    LoopStmt* loop = LoopStmt::findEnclosingLoop(fcall);
+    if (loop) {
+      printf("Found loop\n");
+    VarSymbol *tempcHeap = newTemp(astr("heap_args_for", fn->name), ctype);
+    loop->insertBefore(new DefExpr(tempcHeap));
+    insertChplHereAlloc(loop, false /*insertAfter*/,
+                        tempcHeap, ctype, newMemDesc("bundled args"));
+
+    }
+  }
   // set the references in the class instance
   int i = 1;
   for_formals_actuals(formal, arg, fcall)

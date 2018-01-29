@@ -204,7 +204,8 @@ static void nonLeaderParCheckInt(FnSymbol* fn, bool allowYields)
     if ((call->isPrimitive(PRIM_BLOCK_ON)) ||
         (call->isPrimitive(PRIM_BLOCK_BEGIN_ON)) ||
         (call->isPrimitive(PRIM_BLOCK_COBEGIN_ON)) ||
-        (call->isPrimitive(PRIM_BLOCK_COFORALL_ON))) {
+        (call->isPrimitive(PRIM_BLOCK_COFORALL_ON)) ||
+        (call->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON))) {
       // begin/cobegin/coforall *blocks* are eliminated earlier.
       // If they are not, check for PRIM_YIELD like below.
       INT_ASSERT(false);
@@ -1067,6 +1068,7 @@ static bool fnContainsOn(FnSymbol* fn)
     if (call->isPrimitive(PRIM_BLOCK_ON) ||
         call->isPrimitive(PRIM_BLOCK_BEGIN_ON) ||
         call->isPrimitive(PRIM_BLOCK_COBEGIN_ON) ||
+        call->isPrimitive(PRIM_BLOCK_BOUNDED_COFORALL_ON) ||
         call->isPrimitive(PRIM_BLOCK_COFORALL_ON))
       return true;
 

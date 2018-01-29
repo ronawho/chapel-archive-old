@@ -171,6 +171,7 @@ enum PrimitiveTag {
   PRIM_BLOCK_BEGIN_ON,          // BlockStmt::blockInfo - begin on block
   PRIM_BLOCK_COBEGIN_ON,        // BlockStmt::blockInfo - cobegin on block
   PRIM_BLOCK_COFORALL_ON,       // BlockStmt::blockInfo - coforall on block
+  PRIM_BLOCK_BOUNDED_COFORALL_ON,// BlockStmt::blockInfo - bounded coforall on block
   PRIM_BLOCK_LOCAL,             // BlockStmt::blockInfo - local block
   PRIM_BLOCK_UNLOCAL,           // BlockStmt::blockInfo - unlocal local block
 
