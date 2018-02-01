@@ -783,6 +783,50 @@ void insertChplHereAlloc(Expr*      call,
   }
 }
 
+void insertChplHereAllocBulk(Expr*      call,
+                         bool       insertAfter,
+                         Symbol*    sym,
+                         Type*      t,
+                         Symbol*    numT,
+                         VarSymbol* md) {
+  INT_ASSERT(resolved);
+
+  AggregateType* ct        = toAggregateType(toTypeSymbol(t->symbol)->type);
+  Symbol*        sizeTmp   = newTemp("chpl_here_alloc_size", SIZE_TYPE);
+  CallExpr*      sizeExpr  = new CallExpr(PRIM_MOVE,
+                                          sizeTmp,
+                                          new CallExpr(PRIM_MULT, numT, new CallExpr(PRIM_SIZEOF,
+                                                       (ct != NULL) ?
+                                                       ct->symbol   :
+                                                       t->symbol)));
+  VarSymbol*     mdExpr    = (md != NULL) ? md : newMemDesc(t);
+  Symbol*        allocTmp  = newTemp("chpl_here_alloc_tmp", dtCVoidPtr);
+  CallExpr*      allocExpr = new CallExpr(PRIM_MOVE,
+                                          allocTmp,
+                                          new CallExpr(gChplHereAlloc,
+                                                       sizeTmp,
+                                                       mdExpr));
+  CallExpr*      castExpr  = new CallExpr(PRIM_MOVE,
+                                          sym,
+                                          new CallExpr(PRIM_CAST,
+                                                       t->refType->symbol,
+                                                       allocTmp));
+  if (insertAfter == true) {
+    call->insertAfter(castExpr);
+    call->insertAfter(allocExpr);
+    call->insertAfter(sizeExpr);
+    call->insertAfter(new DefExpr(allocTmp));
+    call->insertAfter(new DefExpr(sizeTmp));
+
+  } else {
+    call->insertBefore(new DefExpr(sizeTmp));
+    call->insertBefore(new DefExpr(allocTmp));
+    call->insertBefore(sizeExpr);
+    call->insertBefore(allocExpr);
+    call->insertBefore(castExpr);
+  }
+}
+
 CallExpr* callChplHereFree(BaseAST* p) {
   CallExpr* retval = NULL;
 

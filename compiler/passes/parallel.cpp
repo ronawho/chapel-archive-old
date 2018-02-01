@@ -149,6 +149,15 @@ static void create_arg_bundle_class(FnSymbol* fn, CallExpr* fcall, ModuleSymbol*
   new_c->addFlag(FLAG_NO_OBJECT);
   new_c->addFlag(FLAG_NO_WIDE_CLASS);
 
+  // And its corresponding reference type.
+  AggregateType* rctype = new AggregateType(AGGREGATE_CLASS);
+  TypeSymbol* r_new_c = new TypeSymbol("_ref_fn_arg_bundle", rctype);
+  r_new_c->addFlag(FLAG_NO_OBJECT);
+  r_new_c->addFlag(FLAG_REF);
+  rctype->fields.insertAtTail(new DefExpr(new VarSymbol("_val", ctype)));
+  ctype->refType = rctype;
+
+
   // Add the runtime header field
   if (fn->hasFlag(FLAG_ON)) {
     VarSymbol* field = new VarSymbol("_runtime_hdr", dtOnBundleRecord);
@@ -226,6 +235,7 @@ static void create_arg_bundle_class(FnSymbol* fn, CallExpr* fcall, ModuleSymbol*
   // BTW 'mod' may differ from fn->defPoint->getModule()
   // e.g. due to iterator inlining.
   mod->block->insertAtHead(new DefExpr(new_c));
+  mod->block->insertAtHead(new DefExpr(r_new_c));
 
   baData.ctype = ctype;
 
@@ -402,14 +412,47 @@ bundleArgs(CallExpr* fcall, BundleArgsFnData &baData) {
   // Don't destroy rt hdr.
   baData.needsDestroy.push_back(false);
 
+  bool bounded = false;
   if (fn->hasFlag(FLAG_BOUNDED_COFORALL_BLOCK)) {
     LoopStmt* loop = LoopStmt::findEnclosingLoop(fcall);
     if (loop) {
-      printf("Found loop\n");
-    VarSymbol *tempcHeap = newTemp(astr("heap_args_for", fn->name), ctype);
-    loop->insertBefore(new DefExpr(tempcHeap));
-    insertChplHereAlloc(loop, false /*insertAfter*/,
-                        tempcHeap, ctype, newMemDesc("bundled args"));
+            
+      std::vector<Symbol*> symbols;
+      collectSymbols(loop->parentExpr->parentExpr, symbols);
+      for_vector(Symbol, symbol, symbols) {
+        if (symbol->hasFlag(FLAG_BOUNDED_COFORALL_NUM_TASKS)) {
+          bounded = true;
+
+          VarSymbol* memDesc = newMemDesc("bundled args");
+          VarSymbol* counter = newTemp("counter", dtInt[INT_SIZE_64]);
+
+          VarSymbol *tempcHeap = newTemp(astr("heap_args_for", fn->name), ctype->refType);
+          loop->insertBefore(new DefExpr(tempcHeap));
+          insertChplHereAllocBulk(loop, false, tempcHeap, ctype, symbol, memDesc);
+
+          VarSymbol* thing  = newTemp("thing", ctype->getValType());
+          loop->insertBefore(new DefExpr(thing));
+          loop->insertAtTail(new CallExpr(PRIM_MOVE, thing, new CallExpr(PRIM_DEREF, tempc)));
+          loop->insertAtTail(new CallExpr(PRIM_ARRAY_SET, tempcHeap, counter, thing)); 
+
+          //VarSymbol *locHeap = newTemp(astr("loc_heap", fn->name), dtLocaleID);
+          //loop->insertBefore(new DefExpr(locHeap));
+          //insertChplHereAllocBulk(loop, false, locHeap, dtLocaleID, symbol, memDesc);
+
+          //VarSymbol *voidHeap = newTemp(astr("void_heap", fn->name), dtCVoidPtr);
+          //loop->insertBefore(new DefExpr(voidHeap));
+          //insertChplHereAllocBulk(loop, false, voidHeap, dtCVoidPtr, symbol, memDesc);
+
+
+          loop->insertBefore(new DefExpr(counter));
+          loop->insertBefore(new CallExpr(PRIM_MOVE, counter, new_IntSymbol(0, INT_SIZE_64)));
+          loop->insertAtTail(new CallExpr(PRIM_ADD_ASSIGN, counter, new_IntSymbol(1, INT_SIZE_64)));
+
+          break;
+        }
+      }
+
+
 
     }
   }

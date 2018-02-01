@@ -136,6 +136,12 @@ void      insertChplHereAlloc(Expr*      call,
                               Symbol*    sym,
                               Type*      t,
                               VarSymbol* md = NULL);
+void      insertChplHereAllocBulk(Expr*      call,
+                              bool       insertAfter,
+                              Symbol*    sym,
+                              Type*      t,
+                              Symbol*    numT,
+                              VarSymbol* md = NULL);
 
 CallExpr* callChplHereFree(BaseAST* p);
 

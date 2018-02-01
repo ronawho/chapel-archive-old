@@ -301,7 +301,7 @@ static void updateDerefCalls() {
       if (def && def->isPrimitive(PRIM_DEREF)) {
         CallExpr* move = toCallExpr(def->parentExpr);
 
-        INT_ASSERT(isMoveOrAssign(move));
+        //INT_ASSERT(isMoveOrAssign(move));
 
         if (se->isRef() == false) {
           SET_LINENO(se);

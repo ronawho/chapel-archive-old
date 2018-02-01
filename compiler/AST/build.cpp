@@ -1580,6 +1580,7 @@ static BlockStmt* buildLoweredCoforall(Expr* indices,
 
   VarSymbol* coforallCount = newTempConst("_coforallCount");
   VarSymbol* numTasks = newTemp("numTasks");
+  numTasks->addFlag(FLAG_BOUNDED_COFORALL_NUM_TASKS);
   VarSymbol* useLocalEndCount = gTrue;
   VarSymbol* countRunningTasks = gTrue;
 
