@@ -143,7 +143,7 @@ const DistTaskSpace = LocTaskSpace dmapped Block(LocTaskSpace);
 
 var allBucketKeys: [DistTaskSpace] [0..#recvBuffSize] keyType;
 var recvOffset: [DistTaskSpace] atomic int;
-var totalTime, inputTime, bucketCountTime, bucketOffsetTime, bucketizeTime,
+var totalTime, inputTime, inputDeclTime, bucketCountTime, bucketOffsetTime, bucketizeTime,
     exchangeKeysTime, exchangeKeysOnlyTime, exchangeKeysBarrierTime,
     countKeysTime: [DistTaskSpace] [1..numTrials] real;
 var verifyKeyCount: atomic int;
@@ -188,6 +188,12 @@ proc bucketSort(taskID : int, trial: int, time = false, verify = false) {
   }
 
   var myKeys: [0..#keysPerTask] keyType;
+
+  if subtime {
+    inputDeclTime.localAccess[taskID][trial] = subTimer.elapsed();
+    subTimer.clear();
+  }
+
   makeInput(taskID, myKeys);
 
   if subtime {
@@ -409,6 +415,7 @@ proc printTimingData(units) {
   if printTimingTables {
     if useSubTimers {
       printTimeTable(inputTime, units, "input");
+      printTimeTable(inputDeclTime, units, "input decl");
       printTimeTable(bucketCountTime, units, "bucket count");
       printTimeTable(bucketOffsetTime, units, "bucket offset");
       printTimeTable(bucketizeTime, units, "bucketize");
@@ -424,6 +431,7 @@ proc printTimingData(units) {
   writeln("averages across ", units, " of min across trials (min..max):");
   if useSubTimers {
     printTimingStats(inputTime, "input");
+    printTimingStats(inputDeclTime, "input decl");
     printTimingStats(bucketCountTime, "bucket count");
     printTimingStats(bucketOffsetTime, "bucket offset");
     printTimingStats(bucketizeTime, "bucketize");

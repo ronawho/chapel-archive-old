@@ -28,6 +28,7 @@
 #include <assert.h>
 #include "arg.h"
 #include "chpl-comm.h"
+#include "chpl-env.h"
 #include "chpl-mem-hook.h"
 #include "chpl-topo.h"
 #include "chpltypes.h"
@@ -127,8 +128,14 @@ void chpl_mem_free(void* memAlloc, int32_t lineno, int32_t filename) {
   chpl_free(memAlloc);
 }
 
+
 static inline
 chpl_bool chpl_mem_size_justifies_comm_alloc(size_t size) {
+  static int allow_comm_alloc = -1;
+  if (allow_comm_alloc == -1) {
+    allow_comm_alloc = (int)chpl_env_rt_get_bool("COMM_ALLOC", true);
+  }
+  if (!allow_comm_alloc) return false;
   //
   // Don't try to use comm layer allocation unless the size is beyond
   // the comm layer threshold and enough pages to make localization
