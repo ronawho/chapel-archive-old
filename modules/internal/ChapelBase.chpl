@@ -819,11 +819,13 @@ module ChapelBase {
   inline proc _ddata_allocate(type eltType, size: integral,
                               subloc = c_sublocid_none) {
     var ret: _ddata(eltType);
+    const initMethod = chpl_computeArrayInitMethod(size, eltType);
+    const serialInit = initMethod == ArrayInit.serialInit;
     var callAgain: bool;
-    __primitive("array_alloc", ret, size, subloc, c_ptrTo(callAgain), c_nil);
-    init_elts(ret, size, eltType);
+    __primitive("array_alloc", ret, size, subloc, c_ptrTo(callAgain), c_nil, serialInit);
+    init_elts(ret, size, eltType, initMethod);
     if callAgain then
-      __primitive("array_alloc", ret, size, subloc, c_nil, ret);
+      __primitive("array_alloc", ret, size, subloc, c_nil, ret, serialInit);
     return ret;
   }
 

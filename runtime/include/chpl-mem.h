@@ -141,7 +141,7 @@ chpl_bool chpl_mem_size_justifies_comm_alloc(size_t size) {
 
 static inline
 void* chpl_mem_array_alloc(size_t nmemb, size_t eltSize, c_sublocid_t subloc,
-                           chpl_bool* callAgain, void* repeat_p,
+                           chpl_bool* callAgain, void* repeat_p, chpl_bool ser,
                            int32_t lineno, int32_t filename) {
   const size_t size = nmemb * eltSize;
   void* p;
@@ -165,7 +165,7 @@ void* chpl_mem_array_alloc(size_t nmemb, size_t eltSize, c_sublocid_t subloc,
 
     p = NULL;
     *callAgain = false;
-    if (chpl_mem_size_justifies_comm_alloc(size)) {
+    if (!ser && chpl_mem_size_justifies_comm_alloc(size)) {
       p = chpl_comm_regMemAlloc(size, CHPL_RT_MD_ARRAY_ELEMENTS,
                                 lineno, filename);
       if (p != NULL) {
@@ -200,10 +200,11 @@ static inline
 void* chpl_mem_wide_array_alloc(int32_t dstNode, size_t nmemb, size_t eltSize,
                                 c_sublocid_t subloc,
                                 chpl_bool* callAgain, void* repeat_p,
+                                chpl_bool ser,
                                 int32_t lineno, int32_t filename) {
   if (dstNode != chpl_nodeID)
     chpl_error("array vector data is not local", lineno, filename);
-  return chpl_mem_array_alloc(nmemb, eltSize, subloc, callAgain, repeat_p,
+  return chpl_mem_array_alloc(nmemb, eltSize, subloc, callAgain, repeat_p, ser,
                               lineno, filename);
 }
 
