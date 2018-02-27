@@ -736,7 +736,12 @@ module ChapelBase {
         const heuristicWantsPar = arrsizeInBytes > heuristicThresh;
 
         if heuristicWantsPar {
-          initMethod = ArrayInit.parallelInit;
+          const numChunks = if __primitive("task_get_serial") then
+                            1 else _computeNumChunks(s);
+          if numChunks > 1 then
+            initMethod = ArrayInit.parallelInit;
+          else
+            initMethod = ArrayInit.serialInit;
         } else {
           initMethod = ArrayInit.serialInit;
         }
