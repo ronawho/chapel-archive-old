@@ -699,7 +699,8 @@ module ChapelBase {
     }
   }
 
-  proc init_elts(x, s, type t) : void {
+  // Computes the initialization strategy for an array of size s, with a type t
+  inline proc chpl_computeArrayInitMethod(s, type t) {
     var initMethod = chpl_getArrayInitMethod();
 
     // for uints, check that s > 0, so the `s-1` below doesn't overflow
@@ -749,6 +750,10 @@ module ChapelBase {
       }
     }
 
+    return initMethod;
+  }
+
+  proc init_elts(x, s, type t, initMethod=chpl_computeArrayInitMethod(s, t)) : void {
     // Q: why is the declaration of 'y' in the following loops?
     //
     // A: so that if the element type is something like an array,
