@@ -412,6 +412,7 @@ bundleArgs(CallExpr* fcall, BundleArgsFnData &baData) {
   // Don't destroy rt hdr.
   baData.needsDestroy.push_back(false);
 
+  // https://github.com/chapel-lang/chapel/pull/4074/files#diff-aee018156c36c678cf471abcbe0d057d
   bool bounded = false;
   if (fn->hasFlag(FLAG_BOUNDED_COFORALL_BLOCK)) {
     LoopStmt* loop = LoopStmt::findEnclosingLoop(fcall);
