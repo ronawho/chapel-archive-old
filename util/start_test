@@ -936,10 +936,18 @@ def set_up_performance_testing_B():
         if not args.gen_graph_opts:
             args.gen_graph_opts = ""
 
+    gen_perf_sha()
+
+
+
+def gen_perf_sha():
+    """
+    Generate a perfsha.dat file with the current SHA in it for the purpose of
+    associating a test session with a specific development version.
+    """
     if args.performance or args.comp_performance:
-        # SHA for current run, in order to track dates to commits
         if args.performance:
-            dat_dir = os.path.join(perf_dir, perf_desc)
+            dat_dir = os.path.join(perf_dir, args.performance_description)
         else:
             dat_dir = comp_perf_dir
 
