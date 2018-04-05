@@ -939,6 +939,11 @@ def set_up_performance_testing_B():
     gen_perf_sha()
 
 
+def compute_sha():
+    try:
+	return subprocess.check_output(["git", "rev-parse", "HEAD"])
+    except:
+	return None
 
 def gen_perf_sha():
     """
@@ -960,11 +965,7 @@ def gen_perf_sha():
 
         sha_out_name = os.path.join(chpl_test_tmp_dir, "sha.exec.out.tmp")
         with open(sha_out_name, "w") as sha_out:
-            try:
-                output = subprocess.check_output(["git", "rev-parse", "HEAD"])
-                sha_out.write("sha " + output)
-            except:
-                pass
+	    sha_out.write("sha {0}".format(compute_sha()))
 
         sha_dat_file_name = "perfSha"
         sha_dat_file_path = os.path.join(dat_dir, "{0}.dat"
