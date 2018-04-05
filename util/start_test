@@ -940,10 +940,23 @@ def set_up_performance_testing_B():
 
 
 def compute_sha():
+    """
+     Determine the SHA by parsing `chpl --version`. Note that if an official
+     release is used the release number instead of the pre-release SHA is used.
+    """
     try:
-	return subprocess.check_output(["git", "rev-parse", "HEAD"])
+        version = None
+        output = subprocess.check_output(['chpl', '--version'])
+        for line in output.splitlines():
+            ver_pattern = re.search(r'version ([\d.]+)', line)
+            if ver_pattern:
+                version = ver_pattern.group(1)
+                sha_pattern = re.search(r'pre-release \((.*)\)', line)
+                if sha_pattern:
+                    version = sha_pattern.group(1)
+        return version
     except:
-	return None
+        return None
 
 def gen_perf_sha():
     """
@@ -979,7 +992,7 @@ def gen_perf_sha():
                 sha_pef_keys_name, sha_out_name])
             logger.write(out)
         except:
-            logger.write("[Error: Failed to save current sha to {0}]"
+            logger.write("[Warning: Failed to save current sha to {0}]"
                     .format(sha_dat_file_path))
 
 
