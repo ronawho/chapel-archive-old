@@ -5,7 +5,7 @@
    using multiple locales set up your environment as described in
    :ref:`multilocale documentation <readme-multilocale>` and execute it
    using the ``-nl #`` flag to specify  the number of locales.
-   For example, to run on 2 locales, run: ``./a.out -nl 2``
+   For example, to run on 2 locales, run: ``./locales -nl 2``
 */
 
 //
@@ -214,7 +214,7 @@ writeln();
 //
 class Node {
   var data: real;
-  var next: Node;
+  var next: unmanaged Node;
 }
 
 
@@ -231,13 +231,13 @@ class Node {
 // the next locale.  That way, our execution of ``new`` will create
 // the new object on that "next" locale.
 //
-var head    = new Node(0);
+var head    = new unmanaged Node(0);
 
 var current = head;
 
 for i in 1..numLocales-1 do
   on Locales[i] {
-    current.next = new Node(i);
+    current.next = new unmanaged Node(i);
     current      = current.next;
   }
 

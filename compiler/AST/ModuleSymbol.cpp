@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -29,17 +29,18 @@
 ModuleSymbol*                      rootModule            = NULL;
 ModuleSymbol*                      theProgram            = NULL;
 ModuleSymbol*                      baseModule            = NULL;
-ModuleSymbol*                      mainModule            = NULL;
 
 ModuleSymbol*                      stringLiteralModule   = NULL;
 ModuleSymbol*                      standardModule        = NULL;
 ModuleSymbol*                      printModuleInitModule = NULL;
 
 Vec<ModuleSymbol*>                 userModules; // Contains user + main modules
-Vec<ModuleSymbol*>                 allModules;  // Contains all modules
+Vec<ModuleSymbol*>                 allModules;  // Contains all modules except rootModule
+
+static ModuleSymbol*               sMainModule           = NULL;
+static std::string                 sMainModuleName;
 
 static std::vector<ModuleSymbol*>  sTopLevelModules;
-
 
 /************************************* | **************************************
 *                                                                             *
@@ -52,7 +53,6 @@ void ModuleSymbol::addTopLevelModule(ModuleSymbol* module) {
 
   theProgram->block->insertAtTail(new DefExpr(module));
 }
-
 
 void ModuleSymbol::getTopLevelModules(std::vector<ModuleSymbol*>& mods) {
   for (size_t i = 0; i < sTopLevelModules.size(); i++) {
@@ -80,7 +80,119 @@ const char* ModuleSymbol::modTagToString(ModTag modTag) {
   return retval;
 }
 
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
+void ModuleSymbol::mainModuleNameSet(const ArgumentDescription* desc,
+                                     const char*                arg) {
+  sMainModuleName = arg;
+}
+
+ModuleSymbol* ModuleSymbol::mainModule() {
+  if (sMainModule == NULL) {
+    sMainModule = findMainModuleByName();
+  }
+
+  if (sMainModule == NULL) {
+    sMainModule = findMainModuleFromMainFunction();
+  }
+
+  if (sMainModule == NULL) {
+    sMainModule = findMainModuleFromCommandLine();
+  }
+
+  INT_ASSERT(sMainModule != NULL);
+
+  return sMainModule;
+}
+
+ModuleSymbol* ModuleSymbol::findMainModuleByName() {
+  ModuleSymbol* retval = NULL;
+
+  if (sMainModuleName != "") {
+    forv_Vec(ModuleSymbol, mod, userModules) {
+      if (sMainModuleName == mod->path()) {
+        retval = mod;
+      }
+    }
+
+    if (retval == NULL) {
+      USR_FATAL("Couldn't find module %s", sMainModuleName.c_str());
+    }
+  }
+
+  return retval;
+}
+
+ModuleSymbol* ModuleSymbol::findMainModuleFromMainFunction() {
+  bool          errorP  = false;
+  FnSymbol*     matchFn = NULL;
+  ModuleSymbol* retval  = NULL;
+
+  forv_Vec(FnSymbol, fn, gFnSymbols) {
+    if (strcmp("main", fn->name) == 0) {
+      ModuleSymbol* fnMod = fn->getModule();
+
+      if (fnMod->hasFlag(FLAG_MODULE_FROM_COMMAND_LINE_FILE) == true) {
+        if (retval == NULL) {
+          matchFn = fn;
+          retval  = fnMod;
+
+        } else {
+          if (errorP == false) {
+            const char* info = "";
+
+            errorP = true;
+
+            if (fnMod != retval) {
+              info = " (use --main-module to disambiguate)";
+            }
+
+            USR_FATAL_CONT("Ambiguous main() function%s:", info);
+
+            USR_PRINT(matchFn, "in module %s", retval->name);
+          }
+
+          USR_PRINT(fn, "in module %s", fnMod->name);
+        }
+      }
+    }
+  }
+
+  if (errorP == true) {
+    USR_STOP();
+  }
+
+  return retval;
+}
+
+ModuleSymbol* ModuleSymbol::findMainModuleFromCommandLine() {
+  ModuleSymbol* retval = NULL;
+
+  for_alist(expr, theProgram->block->body) {
+    if (DefExpr* def = toDefExpr(expr)) {
+      if (ModuleSymbol* mod = toModuleSymbol(def->sym)) {
+        if (mod->hasFlag(FLAG_MODULE_FROM_COMMAND_LINE_FILE) == true) {
+          if (retval != NULL) {
+            USR_FATAL_CONT("a program with multiple user modules "
+                           "requires a main function");
+            USR_PRINT("alternatively, specify a main module with "
+                      "--main-module");
+
+            USR_STOP();
+          }
+
+          retval = mod;
+        }
+      }
+    }
+  }
+
+  return retval;
+}
 
 /************************************* | **************************************
 *                                                                             *
@@ -101,8 +213,6 @@ ModuleSymbol::ModuleSymbol(const char* iName,
   doc                 = NULL;
   extern_info         = NULL;
   llvmDINameSpace     = NULL;
-
-  block->parentSymbol = this;
 
   registerModule(this);
 
@@ -310,8 +420,33 @@ void ModuleSymbol::printTableOfContents(std::ostream* file) {
 /*
  * Returns name of module, including any prefixes that have been set.
  */
-std::string ModuleSymbol::docsName() {
-  return this->name;
+std::string ModuleSymbol::docsName() const {
+  return name;
+}
+
+/*
+ * Generate a name that represents the path to the module
+ * For a top-level module this is simply the name.
+ * For nested modules that name corresponds to the "use name"
+ */
+
+std::string ModuleSymbol::path() const {
+  std::string retval;
+
+  if (this == rootModule) {
+    retval = name;
+
+  } else {
+    ModuleSymbol* parent = toModuleSymbol(defPoint->parentSymbol);
+
+    if (parent == theProgram) {
+      retval = name;
+    } else {
+      retval = (parent->path() + ".") + name;
+    }
+  }
+
+  return retval;
 }
 
 
@@ -492,10 +627,6 @@ void ModuleSymbol::addDefaultUses() {
     SET_LINENO(this);
 
     block->useListAdd(rootModule);
-
-    UnresolvedSymExpr* modRef = new UnresolvedSymExpr("ChapelStringLiterals");
-
-    block->insertAtHead(new UseStmt(modRef));
   }
 }
 
@@ -540,7 +671,10 @@ void ModuleSymbol::moduleUseRemove(ModuleSymbol* mod) {
     // The dead module may have used other modules.  If so add them
     // to the current module
     forv_Vec(ModuleSymbol, modUsedByDeadMod, mod->modUseList) {
-      if (modUseList.index(modUsedByDeadMod) < 0) {
+      if (modUseList.index(modUsedByDeadMod) < 0 && modUsedByDeadMod != this) {
+        if (modUsedByDeadMod == mod) {
+          INT_FATAL("Dead module using itself");
+        }
         SET_LINENO(this);
 
         if (inBlock == true) {
@@ -559,12 +693,15 @@ void initRootModule() {
                                           new BlockStmt());
 
   rootModule->filename = astr("<internal>");
+  rootModule->block->parentSymbol = rootModule;
 }
 
 void initStringLiteralModule() {
   stringLiteralModule           = new ModuleSymbol("ChapelStringLiterals",
                                                    MOD_INTERNAL,
                                                    new BlockStmt());
+
+  stringLiteralModule->block->useListAdd(new UseStmt(new UnresolvedSymExpr("ChapelStandard")));
 
   stringLiteralModule->filename = astr("<internal>");
 

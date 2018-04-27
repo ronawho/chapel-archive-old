@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -34,7 +34,7 @@ This Replicated dimension specifier is for use with the
 The dimension of a domain or array for which this specifier is used
 has a *replicand* for each element of ``targetLocales``
 in the same dimension. This is similar to the Replicated distribution
-(:class:`ReplicatedDist`). The dimension specifies differs
+(:class:`Replicated`). The dimension specifies differs
 in that it always accesses the local replicand, whereas the Replicated
 distribution accesses all replicands in certain cases, as specified there.
 
@@ -100,7 +100,7 @@ proc ReplicatedDim.dsiGetPrivatizeData1d() {
 
 // REQ if privatization is supported - same purpose as dsiPrivatize()
 proc ReplicatedDim.dsiPrivatize1d(privatizeData) {
-  return new ReplicatedDim(numLocales = privatizeData(1));
+  return new unmanaged ReplicatedDim(numLocales = privatizeData(1));
 }
 
 // REQ does this class need -- and provide -- the localLocID?
@@ -148,7 +148,7 @@ proc Replicated1dom.dsiGetPrivatizeData1d() {
 // privatized (if it supports privatization).
 proc Replicated1dom.dsiPrivatize1d(privDist, privatizeData) {
   assert(privDist.locale == here); // sanity check
-  return new Replicated1dom(idxType   = this.idxType,
+  return new unmanaged Replicated1dom(idxType   = this.idxType,
                   stridable = this.stridable,
                   wholeR    = privatizeData(1));
 }
@@ -215,20 +215,13 @@ proc ReplicatedDim.dsiNewRectangularDom1d(type idxType, param stridable: bool,
                                   type stoIndexT)
 {
   // ignore stoIndexT - all we need is for other places to work out
-  return new Replicated1dom(idxType, stridable);
+  return new unmanaged Replicated1dom(idxType, stridable);
 }
 
 // A nicety: produce a string showing the parameters.
 // This might get renamed in the future.
 proc ReplicatedDim.toString()
   return "ReplicatedDim(" + numLocales:string + ")";
-
-// REQ-2 create a 1-d global distribution descriptor that
-// describes a reindexing of 'this' from 'oldRange' to 'newRange'.
-// This is the 1-d counterpart of dsiCreateReindexDist().
-proc ReplicatedDim.dsiCreateReindexDist1d(newRange: range(?), oldRange: range(?)) {
-  return this;
-}
 
 // REQ is this a replicated distribution?
 proc Replicated1dom.dsiIsReplicated1d() param return true;
@@ -240,7 +233,7 @@ proc Replicated1dom.dsiIsReplicated1d() param return true;
 // stoIndexT must be the index type of the range returned by
 // dsiSetLocalIndices1d().
 proc Replicated1dom.dsiNewLocalDom1d(type stoIndexT, locId: locIdT) {
-  return new Replicated1locdom(stoIndexT, wholeR.stridable);
+  return new unmanaged Replicated1locdom(stoIndexT, wholeR.stridable);
 }
 
 // REQ given our dimension of the array index, on which locale is it located?

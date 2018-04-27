@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -22,6 +22,7 @@
 #include "AstVisitor.h"
 #include "build.h"
 #include "resolution.h"
+#include "resolveFunction.h"
 #include "stringutil.h"
 
 /************************************ | *************************************
@@ -490,7 +491,7 @@ Type* ParamForLoop::indexType()
 
   if (FnSymbol* sym = range->resolvedFunction())
   {
-    resolveFormals(sym);
+    resolveSignature(sym);
 
     DefExpr* formal = toDefExpr(sym->formals.get(1));
 

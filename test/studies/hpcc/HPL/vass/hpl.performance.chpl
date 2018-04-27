@@ -101,7 +101,7 @@ var tInit, tPS1iter, tUBR1iter, tSC1call, tLF1iter, tBScall, tVer: VTimer;
           divceilpos(n, blkSize*tl1), "*", divceilpos(n+1, blkSize*tl2),
           "  locs ", tl1, "*", tl2, "  dPTPL ", dataParTasksPerLocale);
 
-  const distReplicated = new ReplicatedDist();
+  const distReplicated = new Replicated();
 
   // Replicate 'targetLocales' to reduce comm.
   // 'targetLocales' itself could be replicated instead,
@@ -116,19 +116,19 @@ var tInit, tPS1iter, tUBR1iter, tSC1call, tLF1iter, tBScall, tVer: VTimer;
   // Create individual dimension descriptors
   const
     // block-cyclic for 1st dimension
-    bdim1 = new BlockCyclicDim(lowIdx=1, blockSize=blkSize, numLocales=tl1),
+    bdim1 = new unmanaged BlockCyclicDim(lowIdx=1, blockSize=blkSize, numLocales=tl1),
     // replicated for 1st dimension
-    rdim1 = new ReplicatedDim(tl1),
+    rdim1 = new unmanaged ReplicatedDim(tl1),
 
     // block-cyclic for 2nd dimension
-    bdim2 = new BlockCyclicDim(lowIdx=1, blockSize=blkSize, numLocales=tl2),
+    bdim2 = new unmanaged BlockCyclicDim(lowIdx=1, blockSize=blkSize, numLocales=tl2),
     // replicated for 2nd dimension
-    rdim2 = new ReplicatedDim(tl2);
+    rdim2 = new unmanaged ReplicatedDim(tl2);
 
   const
-    dist1b2b = new DimensionalDist2D(targetLocales, bdim1, bdim2, "dist1b2b"),
-    dist1b2r = new DimensionalDist2D(targetLocales, bdim1, rdim2, "dist1b2r"),
-    dist1r2b = new DimensionalDist2D(targetLocales, rdim1, bdim2, "dist1r2b");
+    dist1b2b = new unmanaged DimensionalDist2D(targetLocales, bdim1, bdim2, "dist1b2b"),
+    dist1b2r = new unmanaged DimensionalDist2D(targetLocales, bdim1, rdim2, "dist1b2r"),
+    dist1r2b = new unmanaged DimensionalDist2D(targetLocales, rdim1, bdim2, "dist1r2b");
 
   //
   // MatVectSpace is a 2D domain of type indexType that represents the
@@ -408,7 +408,7 @@ proc DimensionalArr.dsiLocalSlice1((sliceDim1, sliceDim2)) {
     else
       if origScalar(2) then (sliceDim1,)
       else (sliceDim1, sliceDim2);
-  ref result = locAdesc.myStorageArr[r1, r2].reindex({(...reindexExpr)});;
+  ref result = locAdesc.myStorageArr[r1, r2].reindex(reindexExpr);
   return result;
 }
 
@@ -697,7 +697,7 @@ proc bsComputeRow(diaFrom, diaTo, locId1, locId2, diaLocId2) {
     vmsgmore("  bsR-diag replicateK");
 
     // Reset partial values for future use.
-    local for ps in myPartSums do ps = 0;
+    local do for ps in myPartSums do ps = 0;
     vmsgmore("  bsR-diag reset myPartSums");
 
   } else {
@@ -720,7 +720,7 @@ proc bsComputeRow(diaFrom, diaTo, locId1, locId2, diaLocId2) {
                    myPartSums, gotBlocks);
 
     // Reset partial values for future use.
-    local for ps in myPartSums do ps = 0;
+    local do for ps in myPartSums do ps = 0;
   }
 }
 
@@ -752,7 +752,7 @@ proc bsComputeMyXs(diaFrom, diaTo, locId1, locId2, zeroOutX) {
     on targetLocaleReplForAbIndex(diaFrom, n+1) {
       if checkBsub {
         // verify that that is really a local slice
-        local ref testDummy = Ab._value.dsiLocalSlice1((diaSlice, n+1));
+        local do ref testDummy = Ab._value.dsiLocalSlice1((diaSlice, n+1));
       }
       // TODO: bulkify, unless it is already
       locB = Ab._value.dsiLocalSlice1((diaSlice, n+1));

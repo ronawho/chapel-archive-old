@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -123,7 +123,7 @@ proc BlockDim.dsiGetPrivatizeData1d() {
 }
 
 proc BlockDim.dsiPrivatize1d(privatizeData) {
-  return new BlockDim(privatizeData, this.idxType);
+  return new unmanaged BlockDim(privatizeData, this.idxType);
 }
 
 // constructor for privatization
@@ -143,7 +143,7 @@ proc Block1dom.dsiGetPrivatizeData1d() {
 
 proc Block1dom.dsiPrivatize1d(privDist, privatizeData) {
   assert(privDist.locale == here); // sanity check
-  return new Block1dom(idxType   = this.idxType,
+  return new unmanaged Block1dom(idxType   = this.idxType,
                   stridable = this.stridable,
                   wholeR    = privatizeData(1),
                   pdist     = privDist);
@@ -182,19 +182,6 @@ proc BlockDim.BlockDim(numLocales, boundingBoxLow, boundingBoxHigh, type idxType
 proc BlockDim.toString()
   return "BlockDim(" + numLocales:string + ", " + boundingBox:string + ")";
 
-proc BlockDim.dsiCreateReindexDist1d(newRange: range(?), oldRange: range(?)) {
-  const oldDesc = this;
-  if oldRange.stride != newRange.stride then
-    halt("reindexing from ", oldRange, " to ", newRange,
-         " is not supported by ", oldDesc.toString,
-         " due to a change in stride");
-  // TODO: this is overflow-oblivious. See Block.dsiCreateReindexDist().
-  const delta = newRange.first - oldRange.first;
-  return new BlockDim(idxType     = oldDesc.idxType,
-                   numLocales  = oldDesc.numLocales,
-                   boundingBox = oldDesc.boundingBox + delta);
-}
-
 proc BlockDim.dsiNewRectangularDom1d(type idxType, param stridable: bool,
                                   type stoIndexT)
 {
@@ -203,14 +190,14 @@ proc BlockDim.dsiNewRectangularDom1d(type idxType, param stridable: bool,
     compilerError("The index type ", idxType:string,
                   " does not match the index type ",this.idxType:string,
                   " of the 'BlockDim' 1-d distribution");
-  return new Block1dom(idxType = idxType, stridable = stridable, pdist = this);
+  return new unmanaged Block1dom(idxType = idxType, stridable = stridable, pdist = _to_unmanaged(this));
 }
 
 proc Block1dom.dsiIsReplicated1d() param return false;
 
 proc Block1dom.dsiNewLocalDom1d(type stoIndexT, locId: locIdT) {
   var defaultVal: range(stoIndexT, stridable=this.stridable);
-  return new Block1locdom(myRange = defaultVal);
+  return new unmanaged Block1locdom(myRange = defaultVal);
 }
 
 proc BlockDim.dsiIndexToLocale1d(indexx): locIdT {

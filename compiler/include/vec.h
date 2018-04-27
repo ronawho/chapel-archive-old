@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -63,6 +63,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define SET_LINEAR_SIZE         4               /* must be <= than VEC_INTEGRAL_SIZE */
 #define SET_MAX_PROBE           5
 #define SET_INITIAL_INDEX       2
+
+// Do not define the generic variation of _vec_hasher, requiring us to write
+// a _vec_hasher for potential types.
+//
+// This will help prevent us from hashing on pointer values as we once did.
+template<typename T>
+uintptr_t _vec_hasher(T obj);
+
+template<>
+uintptr_t _vec_hasher(const char* obj);
+template<>
+uintptr_t _vec_hasher(unsigned int obj);
+template<>
+uintptr_t _vec_hasher(int obj);
 
 template <class C, int S = VEC_INTEGRAL_SIZE>  // S must be a power of 2
 class Vec {
@@ -393,7 +407,7 @@ template <class C, int S> C *
 Vec<C,S>::set_add_internal(C c) {
   int j, k;
   if (n) {
-    uintptr_t h = (uintptr_t)c;
+    uintptr_t h = _vec_hasher(c);
     h = h % n;
     for (k = h, j = 0;
          k < n && j < SET_MAX_PROBE;
@@ -418,7 +432,7 @@ template <class C, int S> C *
 Vec<C,S>::set_in_internal(C c) {
   int j, k;
   if (n) {
-    uintptr_t h = (uintptr_t)c;
+    uintptr_t h = _vec_hasher(c);
     h = h % n;
     for (k = h, j = 0;
          k < n && j < SET_MAX_PROBE;

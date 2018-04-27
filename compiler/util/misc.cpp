@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -35,7 +35,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-static const char* help_url = "http://chapel.cray.com/bugs.html";
+static const char* help_url = "https://chapel-lang.org/bugs.html";
 
 // Support for internal errors, adopted from ZPL compiler
 
@@ -87,7 +87,7 @@ bool requireWideReferences() {
 // on-clause is a no-op and execute the associated statement locally.
 //
 bool requireOutlinedOn() {
-  return !fLocal || strcmp(CHPL_LOCALE_MODEL, "flat") != 0;
+  return requireWideReferences();
 }
 
 const char* cleanFilename(const char* name) {
@@ -164,7 +164,7 @@ static void print_user_internal_error() {
 
   get_version(version);
 
-  fprintf(stderr, "chpl Version %s", version);
+  fprintf(stderr, "chpl version %s", version);
 }
 
 
@@ -345,7 +345,7 @@ static void printErrorFooter(bool guess) {
     //
     // and exit if it's fatal (isn't it always?)
     //
-    if (err_fatal) {
+    if (err_fatal && !(err_user && ignore_user_errors)) {
       clean_exit(1);
     }
   }
@@ -446,7 +446,7 @@ void handleError(const char* fmt, ...) {
   if (exit_immediately) {
     if (ignore_errors_for_pass) {
       exit_end_of_pass = true;
-    } else if (!ignore_errors) {
+    } else if (!ignore_errors && !(ignore_user_errors && err_user)) {
       clean_exit(1);
     }
   }
@@ -522,7 +522,7 @@ static void vhandleError(FILE*          file,
   if (exit_immediately) {
     if (ignore_errors_for_pass) {
       exit_end_of_pass = true;
-    } else if (!ignore_errors) {
+    } else if (!ignore_errors && !(ignore_user_errors && err_user)) {
       clean_exit(1);
     }
   }
@@ -533,7 +533,7 @@ void exitIfFatalErrorsEncountered() {
   if (exit_eventually) {
     if (ignore_errors_for_pass) {
       exit_end_of_pass = true;
-    } else if (!ignore_errors) {
+    } else if (!ignore_errors && !(ignore_user_errors && err_user)) {
       clean_exit(1);
     }
   }
@@ -542,7 +542,7 @@ void exitIfFatalErrorsEncountered() {
 
 void considerExitingEndOfPass() {
   if (exit_end_of_pass) {
-    if (!ignore_errors) {
+    if (!ignore_errors && !(ignore_user_errors && err_user)) {
       clean_exit(1);
     }
   }
@@ -550,11 +550,17 @@ void considerExitingEndOfPass() {
 
 
 static void handleInterrupt(int sig) {
-  USR_FATAL("received interrupt");
+  stopCatchingSignals();
+  fprintf(stderr, "error: received interrupt\n");
+  fflush(stdout);
+  fflush(stderr);
+
+  clean_exit(1);
 }
 
 
 static void handleSegFault(int sig) {
+  stopCatchingSignals();
   INT_FATAL("seg fault");
 }
 
@@ -569,6 +575,8 @@ void startCatchingSignals() {
 
 void stopCatchingSignals() {
   signal(SIGINT,  SIG_DFL);
+  signal(SIGTERM, SIG_DFL);
+  signal(SIGHUP,  SIG_DFL);
   signal(SIGSEGV, SIG_DFL);
 }
 

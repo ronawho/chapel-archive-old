@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -42,6 +42,11 @@ module ChapelTuple {
 
   pragma "tuple" record _tuple {
     param size : int;
+  }
+
+  pragma "tuple init fn"
+  inline proc chpl__init_tuple(param size : int) {
+    // body inserted during generic instantiation
   }
 
   //
@@ -98,13 +103,13 @@ module ChapelTuple {
     // body inserted during generic instantiation
   }
 
-  pragma "compiler generated"
+  pragma "last resort"
   proc *(type t, param p: int) {
     compilerError("<type>*<param int> not supported.  If you're trying to specify a homogeneous tuple type, use <param int>*<type>.");
   }
 
-  // compiler generated since if this resolves some other way, OK
-  pragma "compiler generated"
+  // last resort since if this resolves some other way, OK
+  pragma "last resort"
   proc *(p: int, type t) type {
     compilerError("tuple size must be static");
   }
@@ -147,6 +152,7 @@ module ChapelTuple {
   // tuple assignment
   //
   pragma "compiler generated"
+  pragma "last resort"
   inline proc =(ref x: _tuple, y: _tuple) where x.size == y.size {
     for param i in 1..x.size do
       x(i) = y(i);
@@ -208,29 +214,34 @@ module ChapelTuple {
     const ignoreRunning = dataParIgnoreRunningTasks;
     const minIndicesPerTask = dataParMinGranularity;
     const length = this.size;
-    const myRange = 1..#length;
+    const myRange = (0..#length,);
     var (numChunks, _) = _computeChunkStuff(numTasks, ignoreRunning,
                                             minIndicesPerTask,
-                                            (myRange,));
+                                            myRange);
 
     if numChunks == 1 {
       yield myRange;
     } else {
-
       coforall chunk in 0..#numChunks {
         // _computeBlock assumes 0-based ranges
         const (lo,hi) = _computeBlock(length, numChunks, chunk, length-1);
-        // adjust for 1-based indexing
-        yield lo+1..hi+1;
+        yield (lo..hi,);
       }
     }
   }
 
   pragma "no doc"
-  iter _tuple.these(param tag:iterKind, followThis)
+  iter _tuple.these(param tag:iterKind, followThis: _tuple)
       where tag == iterKind.follower
   {
-    for i in followThis do yield this(i);
+    if followThis.size != 1 then
+      compilerError('Tuple zipped with incompatible iterator expression.');
+
+    var fThis = followThis(1).translate(1);
+
+    for i in fThis {
+      yield this(i);
+    }
   }
 
   //
@@ -300,6 +311,7 @@ module ChapelTuple {
   // General tuple cast function
   //
   pragma "tuple cast fn"
+  pragma "unsafe"
   inline proc _cast(type t, x: _tuple) where t:_tuple {
     // body filled in during resolution
   }

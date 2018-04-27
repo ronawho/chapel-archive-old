@@ -16,12 +16,16 @@ class D: C {
 
 class E: C {
   forwarding var myD: D;
+  proc deinit() {
+    delete myD;
+  }
 }
 
-proc E.E() {
+proc E.init() {
   myD = new D();
 }
 
 var myE = new E();
 myE.bar();
 myE.foo();
+delete myE;

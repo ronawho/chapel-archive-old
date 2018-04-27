@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -20,6 +20,7 @@
 module AtomicsCommon {
   use ChapelStandard;
 
+  pragma "use default init"
   record atomic_refcnt {
     // The common case seems to be local access to this class, so we
     // will use explicit processor atomics, even when network

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -47,7 +47,7 @@ void localizeGlobals() {
         Symbol* var = se->symbol();
         ModuleSymbol* parentmod = toModuleSymbol(var->defPoint->parentSymbol);
         CallExpr* parentExpr = toCallExpr(se->parentExpr);
-        bool inAddrOf = parentExpr && parentExpr->isPrimitive(PRIM_ADDR_OF);
+        bool inAddrOf = parentExpr && (parentExpr->isPrimitive(PRIM_ADDR_OF) || parentExpr->isPrimitive(PRIM_SET_REFERENCE));
         bool lhsOfMove = parentExpr && isMoveOrAssign(parentExpr) && (parentExpr->get(1) == se);
 
         // Is var a global constant?
@@ -68,7 +68,7 @@ void localizeGlobals() {
           SET_LINENO(se); // Set the se line number for output
           if (!local_global) {
             const char * newname = astr("local_", var->cname);
-            local_global = newTemp(newname, var->type);
+            local_global = newTemp(newname, var->qualType());
             fn->insertAtHead(new CallExpr(PRIM_MOVE, local_global, var));
             fn->insertAtHead(new DefExpr(local_global));
 

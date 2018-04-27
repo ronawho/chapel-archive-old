@@ -121,20 +121,12 @@ OPTIONS
     Turns off all optimizations in the Chapel compiler and generates naive C
     code with many temporaries.
 
-**--cache-remote**
+**--[no-]cache-remote**
 
     Enables the cache for remote data. This cache can improve communication
     performance for some programs by adding aggregation, write behind, and
     read ahead. This cache is not enabled by any other optimization
     *options* such as **--fast**.
-
-**--conditional-dynamic-dispatch-limit**
-
-    When greater than zero, this limit controls when the compiler will
-    generate code to handle dynamic dispatch with conditional statements. If
-    the number of possible method calls is less than or equal to this limit,
-    a (possibly nested) conditional statement will be used for dynamic
-    dispatch instead of the virtual method table. The default is zero.
 
 **--[no-]copy-propagation**
 
@@ -182,6 +174,11 @@ OPTIONS
     optimizes the invocation of an iterator in a loop header by inlining the
     iterator's definition around the loop body.
 
+**--inline-iterators-yield-limit**
+
+    Limit on the number of yield statements permitted in an inlined iterator.
+    The default value is 10.
+
 **--[no-]live-analysis**
 
     Enable [disable] live variable analysis, which is currently only used to
@@ -224,6 +221,10 @@ OPTIONS
 
     Enable [disable] remote value forwarding of read-only values to remote
     threads if reading them early does not violate program semantics.
+
+**--[no-]remote-serialization**
+
+    Enable [disable] serialization for globals and remote constants.
 
 **--[no-]scalar-replacement**
 
@@ -364,22 +365,31 @@ OPTIONS
 
 **-I, --hdr-search-path <dir>**
 
-    Add dir to the back-end C compiler's search path for header files.
+    Add the specified dir[ectories] to the back-end C compiler's
+    search path for header files along with any directories in the
+    CHPL\_INCLUDE\_PATH environment variable.  Both the environment
+    variable and this flag accept a colon-separated list of
+    directories.
 
 **--ldflags <flags>**
 
-    Add the specified flags to the C compiler link line when linking the
-    generated code. Multiple **--ldflags** *options* can be provided and in
-    that case the combination of the flags will be forwarded to the C
-    compiler.
+    Add the specified flags to the back-end C compiler link line when
+    linking the generated code. Multiple **--ldflags** *options* can
+    be provided and in that case the combination of the flags will be
+    forwarded to the C compiler.
 
 **-l, --lib-linkage <library>**
 
-    Specify a C library to link in on the C compiler command line.
+    Specify a C library to link to on the back-end C compiler command
+    line.
 
 **-L, --lib-search-path <dir>**
 
-    Specify a C library search path on the C compiler command line.
+    Add the specified dir[ectories] to the back-end C compiler's
+    search path for libraries along with any directories in the
+    CHPL\_LIB\_PATH environment variable.  Both the environment
+    variable and this flag accept a colon-separated list of
+    directories.
 
 **-O, --[no-]optimize**
 
@@ -398,8 +408,9 @@ OPTIONS
 
 **-o, --output <filename>**
 
-    Specify the name of the compiler-generated executable (defaults to a.out
-    if unspecified).
+    Specify the name of the compiler-generated executable. Defaults to
+    the filename of the main module (minus its `.chpl` extension), if
+    unspecified.
 
 **--static**
 
@@ -424,28 +435,11 @@ OPTIONS
     example, they might be able to hoist a 'get' out of a loop. See
     $CHPL\_HOME/doc/rst/technotes/llvm.rst for details.
 
-**--llvm-print-ir <name>**
-    Print intermediate representation (IR) of function named <name>. 
-    Need to specify stage using  **--llvm-print-ir-stage** in order 
-    to be printed.
+**--mllvm <option>**
 
-**--llvm-print-ir-stage <stage>**
-    Picks stage from which to print LLVM IR of function defined in 
-    **--llvm-print-ir**. 
-    The chapel compiler runs many different optimization passes each of which
-    can change IR of functions. This option allows one to pick IR of function
-    from some stages of optimization.
+    Pass an option to the LLVM optimization and transformation passes.
+    This option can be specified multiple times.
 
-    There are 3 optimization stages: none, basic, full:
-
-    1. 'none' is stage before any optimization has occurred
-    2. 'basic' is stage where basic optimizations occurs.
-    3. 'full' is stage where all kinds of optimization occurs, these consist
-        of very big optimizations executed by chapel compiler on LLVM IR.
-
-    Note that sometimes function might not be printed, for example when
-    one optimization pass notes that function is unused and decides to remove
-    it.
 
 *Compilation Trace Options*
 
@@ -513,7 +507,6 @@ OPTIONS
     Only a single call to each function is displayed from within any given
     parent function.
 
-
 **--[no-]print-callstack-on-error**
 
     Accompany certain error and warning messages with the Chapel call stack
@@ -521,15 +514,24 @@ OPTIONS
     location. This is useful when the underlying cause of the issue is in
     one of the callers.
 
+**--[no-]print-unused-functions**
+
+    Print the names and source locations of unused functions within the
+    user program.
+
 **-s, --set <config param>[=<value>]**
 
     Overrides the default value of a configuration parameter in the code.
     For boolean configuration variables, the value can be omitted, causing
     the default value to be toggled.
 
-**--[no-]strict-errors**
+**--[no-]permit-unhandled-module-errors**
 
-    Enable [disable] strict mode for error handling.
+    Normally, the compiler ensures that all errors are handled for code
+    inside of a module declaration (unless the module overrides that
+    behavior). This flag overrides this default, so that the compiler
+    will compile code in a module that does not handle its errors. If any
+    error comes up during execution, it will cause the program to halt.
 
 **--[no-]task-tracking**
 
@@ -695,12 +697,6 @@ OPTIONS
     corresponds with and overrides the $CHPL\_TIMERS environment variable
     (defaults to 'generic').
 
-**--wide-pointers <format>**
-
-    Specify the wide pointer format format. This flag corresponds with and
-    overrides the $CHPL\_WIDE\_POINTERS environment variable (defaults to
-    'struct').
-
 *Compiler Information Options*
 
 **--copyright**
@@ -764,7 +760,7 @@ effect as passing that option once.
 BUGS
 ----
 
-See $CHPL\_HOME/doc/rst/bugs.rst for instructions on reporting bugs.
+See $CHPL\_HOME/doc/rst/usingchapel/bugs.rst for instructions on reporting bugs.
 
 SEE ALSO
 --------
@@ -780,5 +776,5 @@ See $CHPL\_HOME/CONTRIBUTORS.md for a list of contributors to Chapel.
 COPYRIGHT
 ---------
 
-Copyright (c) 2004-2017 Cray Inc. (See $CHPL\_HOME/LICENSE for more
+Copyright (c) 2004-2018 Cray Inc. (See $CHPL\_HOME/LICENSE for more
 details.)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -19,6 +19,8 @@
 
 /*
 Support for user-level replicated variables.
+
+.. warning:: Deprecated. Use the module :mod:`ReplicatedVar` instead.
 
 A "replicated" variable is a variable for which there is a copy on each locale.
 Referencing a replicated variable
@@ -42,7 +44,7 @@ Limitations:
 
 .. code-block:: chapel
 
-   var replArray: [MyDomain dmapped ReplicatedDist()] real;
+   var replArray: [MyDomain dmapped Replicated()] real;
 
 .. _basic-usage:
 
@@ -83,13 +85,10 @@ modify the above variable declarations as follows:
 
 .. code-block:: chapel
 
-    var myRepVar: [rcDomainBase dmapped ReplicatedDist(myLocales,
+    var myRepVar: [rcDomainBase dmapped Replicated(myLocales,
                      "over which to replicate 'myRepVar'")] MyType;
     var collected: [myLocales.domain] MyType;
 
-``myLocales`` must be "consistent", as defined for ReplicatedDist.
-That is, for each ``ix`` in ``myLocales.domain``,
-``myLocales[ix]`` must equal ``Locales[ix]``.
 
 Tip: if the domain of the desired array of locales cannot be described
 as a rectangular domain (which could be strided, multi-dimensional,
@@ -103,21 +102,25 @@ module UtilReplicatedVar {
 
 use ReplicatedDist;
 
+compilerWarning(
+  "Module 'UtilReplicatedVar' has been deprecated and demoted to the package 'ReplicatedVar'"
+);
+
 private const rcDomainIx   = 1; // todo convert to param
 /* Use this domain when replicating over a subset of locales,
    as shown :ref:`above <subset-of-locales>`. */
 const rcDomainBase = {rcDomainIx..rcDomainIx};
 private const rcLocales    = Locales;
-private const rcDomainMap  = new ReplicatedDist(rcLocales);
+private const rcDomainMap  = new Replicated(rcLocales);
 /* Use this domain to declare a user-level replicated variable,
    as shown :ref:`above <basic-usage>` . */
 const rcDomain     = rcDomainBase dmapped new dmap(rcDomainMap);
-private param _rcErr1 = " must be 'rcDomain' or 'rcDomainBase dmapped ReplicatedDist(an array of locales)'";
+private param _rcErr1 = " must be 'rcDomain' or 'rcDomainBase dmapped Replicated(an array of locales)'";
 
 private proc _rcTargetLocalesHelper(replicatedVar: [?D])
-  where replicatedVar._value.type: ReplicatedArr
+  where _to_borrowed(replicatedVar._value.type): ReplicatedArr
 {
-  return replicatedVar._value.dom.dist.targetLocales;
+  return replicatedVar.targetLocales();
 }
 
 pragma "no doc" // documented with the following entry
@@ -127,7 +130,7 @@ proc rcReplicate(replicatedVar: [?D] ?MYTYPE, valToReplicate: MYTYPE): void
 /* Assign a value `valToReplicate` to copies of the replicated variable
    `replicatedVar` on all locales. */
 proc rcReplicate(replicatedVar: [?D] ?MYTYPE, valToReplicate: MYTYPE): void
-  where replicatedVar._value.type: ReplicatedArr
+  where _to_borrowed(replicatedVar._value.type): ReplicatedArr
 {
   assert(replicatedVar.domain == rcDomainBase);
   coforall loc in _rcTargetLocalesHelper(replicatedVar) do
@@ -137,13 +140,13 @@ proc rcReplicate(replicatedVar: [?D] ?MYTYPE, valToReplicate: MYTYPE): void
 
 pragma "no doc" // documented with the following entry
 proc rcCollect(replicatedVar: [?D] ?MYTYPE, collected: [?CD] MYTYPE): void
-  where ! replicatedVar._value.type: ReplicatedArr
+  where ! _to_borrowed(replicatedVar._value.type): ReplicatedArr
 { compilerError("the domain of first argument to rcCollect()", _rcErr1); }
 
 /* Copy the value of the replicated variable `replicatedVar` on each locale
    into the element of the array `collected` that corresponds to that locale.*/
 proc rcCollect(replicatedVar: [?D] ?MYTYPE, collected: [?CD] MYTYPE): void
-  where replicatedVar._value.type: ReplicatedArr
+  where _to_borrowed(replicatedVar._value.type): ReplicatedArr
 {
   var targetLocales = _rcTargetLocalesHelper(replicatedVar);
   assert(replicatedVar.domain == rcDomainBase);
@@ -238,7 +241,7 @@ proc rcExampleOverLocales(initVal: ?MyType, newVal: MyType, newLocale: locale,
 
   // declare a replicated variable
   // DIFFERENT from rcExample(): the domain in myRepVar's type
-  var myRepVar: [rcDomainBase dmapped ReplicatedDist(localesToReplicateOver,
+  var myRepVar: [rcDomainBase dmapped Replicated(localesToReplicateOver,
    "over which to replicate 'myRepVar' in rcExampleOverLocales()")] MyType;
 
   // initialize all copies to 'initVal'

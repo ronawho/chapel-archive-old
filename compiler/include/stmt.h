@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -91,7 +91,6 @@ public:
 
   // Interface to Expr
   virtual void        replaceChild(Expr* oldAst, Expr* newAst);
-  virtual Expr*       getFirstChild();
   virtual Expr*       getFirstExpr();
   virtual Expr*       getNextExpr(Expr* expr);
 
@@ -113,6 +112,7 @@ public:
   virtual bool        deadBlockCleanup();
 
   void                appendChapelStmt(BlockStmt* stmt);
+  void                flattenAndRemove();
 
   void                insertAtHead(Expr* ast);
   void                insertAtTail(Expr* ast);
@@ -153,10 +153,10 @@ private:
   CallExpr*           blockInfo;
 };
 
-/************************************ | *************************************
-*                                                                           *
-*                                                                           *
-************************************* | ************************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class CondStmt : public Stmt {
 public:
@@ -171,21 +171,20 @@ public:
   virtual void        verify();
   virtual void        accept(AstVisitor* visitor);
 
-  virtual Expr*       getFirstChild();
   virtual Expr*       getFirstExpr();
   virtual Expr*       getNextExpr(Expr* expr);
 
-  Expr*               foldConstantCondition();
+  CallExpr*           foldConstantCondition();
 
   Expr*               condExpr;
   BlockStmt*          thenStmt;
   BlockStmt*          elseStmt;
 };
 
-/************************************ | *************************************
-*                                                                           *
-*                                                                           *
-************************************* | ************************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 enum GotoTag {
   GOTO_NORMAL,
@@ -195,7 +194,8 @@ enum GotoTag {
   GOTO_GETITER_END,
   GOTO_ITER_RESUME,
   GOTO_ITER_END,
-  GOTO_ERROR_HANDLING
+  GOTO_ERROR_HANDLING,
+  GOTO_BREAK_ERROR_HANDLING
 };
 
 
@@ -216,7 +216,6 @@ class GotoStmt : public Stmt {
   virtual void        verify();
   virtual void        accept(AstVisitor* visitor);
 
-  virtual Expr*       getFirstChild();
   virtual Expr*       getFirstExpr();
 
   const char*         getName();
@@ -225,10 +224,11 @@ class GotoStmt : public Stmt {
   LabelSymbol*        gotoTarget()                                     const;
 };
 
-/************************************ | *************************************
-*                                                                           *
-*                                                                           *
-************************************* | ************************************/
+
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class ExternBlockStmt : public Stmt {
 public:
@@ -243,8 +243,6 @@ public:
 
   // Interface to Expr
   virtual void        replaceChild(Expr* oldAst, Expr* newAst);
-
-  virtual Expr*       getFirstChild();
   virtual Expr*       getFirstExpr();
 
   // Local interface
@@ -252,10 +250,10 @@ public:
 };
 
 
-/************************************ | *************************************
-*                                                                           *
-*                                                                           *
-************************************* | ************************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class ForwardingStmt : public Stmt {
 public:
@@ -274,8 +272,6 @@ public:
 
   // Interface to Expr
   virtual void        replaceChild(Expr* oldAst, Expr* newAst);
-
-  virtual Expr*       getFirstChild();
   virtual Expr*       getFirstExpr();
 
   // forwarding function - contains forwarding expression; used during parsing
@@ -286,6 +282,10 @@ public:
   // (i.e. the type of the expression to forward to).
   // Used during resolution to avoid repeated work.
   Type*               type;
+  // Contains a function that resolution can use to store some expressions
+  // it computes. This function should remain in the tree for proper
+  // scoping comparisons during resolution, but isn't needed after that.
+  FnSymbol*           scratchFn;
 
   // The names of symbols from an 'except' or 'only' list
   std::set<const char *> named;
@@ -296,19 +296,19 @@ public:
 };
 
 
-/************************************ | *************************************
-*                                                                           *
-*                                                                           *
-************************************* | ************************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 extern Vec<LabelSymbol*>         removedIterResumeLabels;
 extern Map<GotoStmt*, GotoStmt*> copiedIterResumeGotos;
-
 
 // Probably belongs in Expr; doesn't really mean Stmt, but rather
 // statement-level expression.
 void         codegenStmt(Expr* stmt);
 
+// Serving ForallStmt and forall intents.
 bool isDirectlyUnderBlockStmt(const Expr* expr);
 
 // Extract (e.toGotoStmt)->(label.toSymExpr)->var and var->->iterResumeGoto,

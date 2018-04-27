@@ -1,6 +1,6 @@
 use ReplicatedDist;
 
-const D = {1..3, 1..3} dmapped ReplicatedDist();
+const D = {1..3, 1..3} dmapped Replicated();
 
 var A: [D] real;
 
@@ -25,13 +25,13 @@ writeln();
 
 for loc in Locales do
   on loc do
-    writeln(A.reindex({0..2, 2..4}));
+    writeln(A.reindex(0..2, 2..4));
 writeln();
 
 writeEm(A);
 writeEm(A[2.., ..2]);
 writeEm(A[2, ..]);
-writeEm(A.reindex({0..2, 2..4}));
+writeEm(A.reindex(0..2, 2..4));
 
 proc writeEm(X) {
   for loc in Locales do

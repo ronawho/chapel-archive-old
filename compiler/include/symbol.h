@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -35,30 +35,18 @@
 namespace llvm
 {
   class MDNode;
+  class Function;
 }
 #endif
-
-//
-// The function that represents the compiler-generated entry point
-//
-extern FnSymbol* chpl_gen_main;
 
 class BasicBlock;
 class BlockStmt;
 class DefExpr;
+class FnSymbol;
 class Immediate;
 class IteratorInfo;
 class Stmt;
 class SymExpr;
-
-// keep in sync with retTagDescrString()
-enum RetTag {
-  RET_VALUE,
-  RET_REF,
-  RET_CONST_REF,
-  RET_PARAM,
-  RET_TYPE
-};
 
 const int INTENT_FLAG_IN          = 0x01;
 const int INTENT_FLAG_OUT         = 0x02;
@@ -87,32 +75,59 @@ enum IntentTag {
 
 typedef std::bitset<NUM_FLAGS> FlagSet;
 
+//
+// ForallIntentTag: a task- or forall-intent tag
+//
+enum ForallIntentTag {
+  TFI_DEFAULT,        // aka TFI_BLANK
+  TFI_CONST,
+  TFI_IN_OUTERVAR,    // see below
+  TFI_IN,
+  TFI_CONST_IN,
+  TFI_REF,
+  TFI_CONST_REF,
+  TFI_REDUCE,
+  TFI_REDUCE_OP,      // see below
+  TFI_TASK_PRIVATE,   // a task-private variable, TPV
+};
+
+const char* forallIntentTagDescription(ForallIntentTag tfiTag);
+
+/* ForallIntentTag enum:
+
+TFI_IN_OUTERVAR shadow var is added by compiler as a placeholder
+for the TFI_IN/TFI_CONST_IN shadow var's outer variable.
+
+TFI_REDUCE_OP shadow var is added by compiler. It is the reduce op
+for the TFI_REDUCE shadow var, which is the accumulation state.
+*/
+
 // for task intents and forall intents
 ArgSymbol* tiMarkForIntent(IntentTag intent);
-ArgSymbol* tiMarkForTFIntent(int tfIntent);
+ArgSymbol* tiMarkForForallIntent(ForallIntentTag intent);
 
-
-/******************************** | *********************************
-*                                                                   *
-*                                                                   *
-********************************* | ********************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class Symbol : public BaseAST {
 public:
   // Interface for BaseAST
   virtual GenRet     codegen();
-  virtual bool       inTree();
+          bool       inTree();
   virtual QualifiedType qualType();
   virtual void       verify();
 
-  // New interfaces
+  // Note: copy may add copied Symbols to the supplied map
   virtual Symbol*    copy(SymbolMap* map      = NULL,
                           bool       internal = false)           = 0;
   virtual void       replaceChild(BaseAST* oldAst,
                                   BaseAST* newAst)               = 0;
 
   virtual bool       isConstant()                              const;
-  virtual bool       isConstValWillNotChange()                 const;
+  virtual bool       isConstValWillNotChange();
   virtual bool       isImmediate()                             const;
   virtual bool       isParameter()                             const;
           bool       isRenameable()                            const;
@@ -168,6 +183,15 @@ public:
   SymExpr*           getSingleUse()                            const;
   // Return the single def of this Symbol, or NULL if there are 0 or >= 2
   SymExpr*           getSingleDef()                            const;
+
+  // The compiler really ought to view a call to `init` that
+  // constructs a const record as the single "def". However it
+  // might consider it a "use" for various reasons. This method
+  // is useful for finding such cases.
+  // This function finds the statement expression that is responsible
+  // for initializing this symbol.
+  Expr*              getInitialization()                       const;
+
 protected:
                      Symbol(AstTag      astTag,
                             const char* init_name,
@@ -205,16 +229,15 @@ private:
 bool isString(Symbol* symbol);
 bool isUserDefinedRecord(Symbol* symbol);
 
-/******************************** | *********************************
-*                                                                   *
-* This class has two roles:                                         *
-*    1) A common abstract base class for VarSymbol and ArgSymbol.   *
-*    2) Maintain location state as an IPE "optimization".           *
-*                                                                   *
-********************************* | ********************************/
+/************************************* | **************************************
+*                                                                             *
+* This class has two roles:                                                   *
+*    1) A common abstract base class for VarSymbol and ArgSymbol.             *
+*    2) Maintain location state as an IPE "optimization".                     *
+*                                                                             *
+************************************** | *************************************/
 
-class LcnSymbol : public Symbol
-{
+class LcnSymbol : public Symbol {
 public:
   int       depth()                                            const;
   int       offset()                                           const;
@@ -235,10 +258,11 @@ private:
   int       mOffset;               // Byte offset within frame
 };
 
-/******************************** | *********************************
-*                                                                   *
-*                                                                   *
-********************************* | ********************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class VarSymbol : public LcnSymbol {
 public:
@@ -248,6 +272,7 @@ public:
 
   //changed isconstant flag to reflect var, const, param: 0, 1, 2
   VarSymbol(const char* init_name, Type* init_type = dtUnknown);
+  VarSymbol(const char* init_name, QualifiedType qType);
   virtual ~VarSymbol();
 
   void verify();
@@ -256,7 +281,7 @@ public:
   void replaceChild(BaseAST* old_ast, BaseAST* new_ast);
 
   virtual bool       isConstant()                              const;
-  virtual bool       isConstValWillNotChange()                 const;
+  virtual bool       isConstValWillNotChange();
   virtual bool       isImmediate()                             const;
   virtual bool       isParameter()                             const;
   virtual bool       isType()                                  const;
@@ -279,6 +304,10 @@ private:
   virtual std::string docsDirective();
   bool isField;
 
+protected:
+  // for subclasses
+  VarSymbol(AstTag astTag, const char* initName, Type* initType);
+
 public:
 #ifdef HAVE_LLVM
   llvm::MDNode *llvmDIGlobalVariable;
@@ -287,13 +316,13 @@ public:
   void* llvmDIGlobalVariable;
   void* llvmDIVariable;
 #endif
-
 };
 
-/******************************** | *********************************
-*                                                                   *
-*                                                                   *
-********************************* | ********************************/
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
 
 class ArgSymbol : public LcnSymbol {
 public:
@@ -318,7 +347,7 @@ public:
 
   // New interface
   virtual bool    isConstant()                              const;
-  virtual bool    isConstValWillNotChange()                 const;
+  virtual bool    isConstValWillNotChange();
   virtual bool    isParameter()                             const;
 
   virtual bool    isVisible(BaseAST* scope)                 const;
@@ -329,6 +358,7 @@ public:
   GenRet          codegenType();
 
   IntentTag       intent;
+  IntentTag       originalIntent; // stores orig intent after resolve intents
   BlockStmt*      typeExpr;    // Type expr for arg type, or NULL.
   BlockStmt*      defaultExpr;
 
@@ -347,6 +377,73 @@ public:
 #endif
 };
 
+/************************************* | **************************************
+*                                                                             *
+*                                                                             *
+*                                                                             *
+************************************** | *************************************/
+
+class ShadowVarSymbol : public VarSymbol {
+public:
+  ShadowVarSymbol(ForallIntentTag iIntent,
+                  const char* iName,
+                  SymExpr* outerVar,
+                  Expr* iSpec = NULL);
+
+  virtual void    verify();
+  virtual void    accept(AstVisitor* visitor);
+  DECLARE_SYMBOL_COPY(ShadowVarSymbol);
+
+  virtual void    replaceChild(BaseAST* oldAst, BaseAST* newAst);
+  virtual bool    isConstant()                              const;
+  virtual bool    isConstValWillNotChange();
+
+  const char* intentDescrString() const;
+  bool        isReduce()          const { return intent == TFI_REDUCE;  }
+
+  static ShadowVarSymbol* buildFromArgIntent(IntentTag intent, Expr* ovar);
+  static ShadowVarSymbol* buildFromReduceIntent(Expr* ovar, Expr* riExpr);
+
+  // The outer variable or NULL if not applicable.
+  Symbol* outerVarSym()    const;
+
+  // Returns the EXPR in "with (EXPR reduce x)".
+  Expr*  reduceOpExpr()    const;
+
+  BlockStmt* initBlock()   const { return svInitBlock; }
+  BlockStmt* deinitBlock() const { return svDeinitBlock; }
+
+  // Convert between TFI_[CONST]_IN and TFI_IN_OUTERVAR svars.
+  ShadowVarSymbol* OutervarForIN() const;
+  ShadowVarSymbol* INforOutervar() const;
+  // Convert between TFI_REDUCE and TFI_REDUCE_OP svars.
+  ShadowVarSymbol* ReduceOpForAccumState() const;
+  ShadowVarSymbol* AccumStateForReduceOp() const;
+
+  // Remove no-longer-needed references to outside symbols when lowering.
+  void     removeSupportingReferences();
+
+  // The intent for this variable.
+  ForallIntentTag intent;
+
+  // Reference to the outer variable. NULL for task-private variables.
+  SymExpr* outerVarSE;
+
+  // For a reduce intent, the reduce expression, wrapped in a block.
+  // Otherwise NULL.
+  BlockStmt* specBlock;
+
+  // Corresponding actions to be performed at task startup and teardown.
+  BlockStmt* svInitBlock;      // always present
+  BlockStmt* svDeinitBlock;    //  "
+
+  // A reduction class instance aka "Operator".
+  Symbol* reduceGlobalOp;
+
+  // Once pruning is no longer needed, this should be removed.
+  bool pruneit;
+};
+
 /******************************** | *********************************
 *                                                                   *
 *                                                                   *
@@ -359,19 +456,27 @@ class TypeSymbol : public Symbol {
   // and cache it if it has.
 #ifdef HAVE_LLVM
   llvm::Type* llvmType;
-  llvm::MDNode* llvmTbaaNode;
-  llvm::MDNode* llvmConstTbaaNode;
-  llvm::MDNode* llvmTbaaStructNode;
-  llvm::MDNode* llvmConstTbaaStructNode;
+  llvm::MDNode* llvmTbaaTypeDescriptor;       // scalar type descriptor
+  llvm::MDNode* llvmTbaaAccessTag;            // scalar access tag
+  llvm::MDNode* llvmConstTbaaAccessTag;       // scalar const access tag
+  llvm::MDNode* llvmTbaaAggTypeDescriptor;    // aggregate type descriptor
+  llvm::MDNode* llvmTbaaAggAccessTag;         // aggregate access tag
+  llvm::MDNode* llvmConstTbaaAggAccessTag;    // aggregate const access tag
+  llvm::MDNode* llvmTbaaStructCopyNode;       // tbaa.struct for memcpy
+  llvm::MDNode* llvmConstTbaaStructCopyNode;  // const tbaa.struct
   llvm::MDNode* llvmDIType;
 #else
   // Keep same layout so toggling HAVE_LLVM
   // will not lead to build errors without make clean
   void* llvmType;
-  void* llvmTbaaNode;
-  void* llvmConstTbaaNode;
-  void* llvmTbaaStructNode;
-  void* llvmConstTbaaStructNode;
+  void* llvmTbaaTypeDescriptor;
+  void* llvmTbaaAccessTag;
+  void* llvmConstTbaaAccessTag;
+  void* llvmTbaaAggTypeDescriptor;
+  void* llvmTbaaAggAccessTag;
+  void* llvmConstTbaaAggAccessTag;
+  void* llvmTbaaStructCopyNode;
+  void* llvmConstTbaaStructCopyNode;
   void* llvmDIType;
 #endif
 
@@ -383,6 +488,7 @@ class TypeSymbol : public Symbol {
 
   void renameInstantiatedMulti(SymbolMap& subs, FnSymbol* fn);
   void renameInstantiatedSingle(Symbol* sym);
+  void renameInstantiatedFromSuper(TypeSymbol* superSym);
 
   GenRet codegen();
   void codegenDef();
@@ -390,8 +496,14 @@ class TypeSymbol : public Symbol {
   // This function is used to code generate the LLVM TBAA metadata
   // after all of the types have been defined.
   void codegenMetadata();
+  // TBAA metadata for complex types
+  void codegenCplxMetadata();
+  // TBAA metadata for aggregates
+  void codegenAggMetadata();
 
   const char* doc;
+
+  BlockStmt* instantiationPoint;
 
  private:
   void renameInstantiatedStart();
@@ -405,132 +517,7 @@ class TypeSymbol : public Symbol {
 *                                                                             *
 ************************************** | *************************************/
 
-class FnSymbol : public Symbol {
-public:
-  // each formal is an ArgSymbol, but the elements are DefExprs
-  AList                      formals;
-
-  // The return type of the function. This field is not fully established
-  // until function resolution, and could be NULL before then.  Up to that
-  // point, return type information is stored in the retExprType field.
-  Type*                      retType;
-
-  BlockStmt*                 where;
-  BlockStmt*                 retExprType;
-  BlockStmt*                 body;
-  IntentTag                  thisTag;
-  RetTag                     retTag;
-
-  // Attached original (user) iterators before lowering.
-  IteratorInfo*              iteratorInfo;
-
-  Symbol*                    _this;
-  Symbol*                    _outer;
-  FnSymbol*                  instantiatedFrom;
-  SymbolMap                  substitutions;
-  BlockStmt*                 instantiationPoint;
-  std::vector<BasicBlock*>*  basicBlocks;
-  Vec<CallExpr*>*            calledBy;
-  const char*                userString;
-
-  // pointer to value function (created in function resolution
-  // and used in cullOverReferences)
-  FnSymbol*                  valueFunction;
-
-  int                        codegenUniqueNum;
-  const char*                doc;
-
-  // Used to store the return symbol during partial copying.
-  Symbol*                    retSymbol;
-
-  // Number of formals before tuple type constructor formals are added.
-  int                        numPreTupleFormals;
-
-#ifdef HAVE_LLVM
-  llvm::MDNode*              llvmDISubprogram;
-#else
-  void*                      llvmDISubprogram;
-#endif
-
-
-                             FnSymbol(const char* initName);
-                            ~FnSymbol();
-
-  void                       verify();
-  virtual void               accept(AstVisitor* visitor);
-
-  DECLARE_SYMBOL_COPY(FnSymbol);
-
-  FnSymbol*                  copyInnerCore(SymbolMap* map);
-  void                       replaceChild(BaseAST* oldAst, BaseAST* newAst);
-
-  FnSymbol*                  partialCopy(SymbolMap* map);
-  void                       finalizeCopy();
-
-  // Returns an LLVM type or a C-cast expression
-  GenRet                     codegenFunctionType(bool forHeader);
-  GenRet                     codegenCast(GenRet fnPtr);
-
-  GenRet                     codegen();
-  void                       codegenHeaderC();
-  void                       codegenPrototype();
-  void                       codegenDef();
-
-  void                       printDef(FILE* outfile);
-
-  void                       insertAtHead(Expr* ast);
-  void                       insertAtHead(const char* format, ...);
-
-  void                       insertAtTail(Expr* ast);
-  void                       insertAtTail(const char* format, ...);
-
-  void                       insertFormalAtHead(BaseAST* ast);
-  void                       insertFormalAtTail(BaseAST* ast);
-
-  void                       insertBeforeEpilogue(Expr* ast);
-
-  // insertIntoEpilogue adds an Expr before the final return,
-  // but after the epilogue label
-  void                       insertIntoEpilogue(Expr* ast);
-
-  LabelSymbol*               getEpilogueLabel();
-  LabelSymbol*               getOrCreateEpilogueLabel();
-
-  Symbol*                    getReturnSymbol();
-  Symbol*                    replaceReturnSymbol(Symbol* newRetSymbol,
-                                                 Type*   newRetType);
-
-  int                        numFormals()                                const;
-  ArgSymbol*                 getFormal(int i);
-
-  void                       collapseBlocks();
-
-  bool                       tagIfGeneric();
-
-  bool                       isResolved()                                const;
-  bool                       isMethod()                                  const;
-  bool                       isPrimaryMethod()                           const;
-  bool                       isSecondaryMethod()                         const;
-  bool                       isIterator()                                const;
-  bool                       returnsRefOrConstRef()                      const;
-
-  QualifiedType              getReturnQualType()                         const;
-
-  virtual void               printDocs(std::ostream* file,
-                                       unsigned int  tabs);
-
-  void                       throwsErrorInit();
-  bool                       throwsError()                               const;
-
-  bool                       retExprDefinesNonVoid()                     const;
-
-private:
-  virtual std::string        docsDirective();
-
-  int                        hasGenericFormals()                         const;
-
-  bool                       _throwsError;
-};
+#include "FnSymbol.h"
 
 /************************************* | **************************************
 *                                                                             *
@@ -632,6 +619,11 @@ VarSymbol *new_CommIDSymbol(int64_t b);
 
 VarSymbol *new_ImmediateSymbol(Immediate *imm);
 
+// Get an Immediate stored in a VarSymbol or an EnumSymbol.
+// When called on an EnumSymbol, requires that the enum type is already
+// resolved.
+Immediate *getSymbolImmediate(Symbol* sym);
+
 void createInitStringLiterals();
 void resetTempID();
 FlagSet getRecordWrappedFlags(Symbol* s);
@@ -644,20 +636,30 @@ VarSymbol* newTempConst(Type* type);
 VarSymbol* newTempConst(const char* name, QualifiedType qt);
 VarSymbol* newTempConst(QualifiedType qt);
 
-void       verifyInTree(BaseAST* ast, const char* msg);
-
-// for use in an English sentence
-const char* retTagDescrString(RetTag    retTag);
 const char* intentDescrString(IntentTag intent);
+
+// cache some popular strings
+extern const char* astrSdot;
+extern const char* astrSequals;
+extern const char* astr_cast;
+extern const char* astrInit;
+extern const char* astrDeinit;
+extern const char* astrTag;
+extern const char* astrThis;
+void initAstrConsts();
 
 // Return true if the arg must use a C pointer whether or not
 // pass-by-reference intents are used.
 bool argMustUseCPtr(Type* t);
 
+// Is 'expr' a SymExpr for the outerVar of some ShadowVarSymbol?
+bool isOuterVarOfShadowVar(Expr* expr);
+
 // Parser support.
 class ForallIntents;
 void addForallIntent(ForallIntents* fi, Expr* var, IntentTag intent, Expr* ri);
-void addTaskIntent(CallExpr* ti,        Expr* var, IntentTag intent, Expr* ri);
+void addForallIntent(CallExpr* fi, ShadowVarSymbol* svar);
+void addTaskIntent(CallExpr* ti, ShadowVarSymbol* svar);
 
 extern bool localTempNames;
 
@@ -666,7 +668,6 @@ extern HashMap<Immediate*, ImmHashFns, VarSymbol*> stringLiteralsHash;
 
 extern StringChainHash uniqueStringHash;
 
-extern FnSymbol *initStringLiterals;
 extern Symbol *gNil;
 extern Symbol *gUnknown;
 extern Symbol *gMethodToken;
@@ -676,7 +677,6 @@ extern Symbol *gModuleToken;
 extern Symbol *gNoInit;
 extern Symbol *gVoid;
 extern Symbol *gStringC;
-extern Symbol *gStringCopy;
 extern Symbol *gCVoidPtr;
 extern Symbol *gFile;
 extern Symbol *gOpaque;
@@ -692,39 +692,35 @@ extern VarSymbol *gPrivatization;
 extern VarSymbol *gLocal;
 extern VarSymbol *gNodeID;
 extern VarSymbol *gModuleInitIndentLevel;
-extern FnSymbol *gPrintModuleInitFn;
-extern FnSymbol *gAddModuleFn;
-extern FnSymbol *gChplHereAlloc;
-extern FnSymbol *gChplHereFree;
-extern FnSymbol *gChplDoDirectExecuteOn;
-extern FnSymbol *gGenericTupleTypeCtor;
-extern FnSymbol *gGenericTupleInit;
-extern FnSymbol *gGenericTupleDestroy;
-extern FnSymbol *gChplDeleteError;
-
-// These global symbols point to generic functions that
-// will be instantiated.
-extern FnSymbol *gBuildTupleType;
-extern FnSymbol *gBuildStarTupleType;
-extern FnSymbol *gBuildTupleTypeNoRef;
-extern FnSymbol *gBuildStarTupleTypeNoRef;
 
 extern Symbol *gSyncVarAuxFields;
 extern Symbol *gSingleVarAuxFields;
-
-extern std::map<FnSymbol*,int> ftableMap;
-extern std::vector<FnSymbol*> ftableVec;
 
 #define FUNC_NAME_MAX 256
 extern char llvmPrintIrName[FUNC_NAME_MAX+1];
 extern char llvmPrintIrStage[FUNC_NAME_MAX+1];
 
 namespace llvmStageNum {
-typedef enum { NOPRINT = 0,
+typedef enum {
+       // The first options here refer to high-level Chapel LLVM optimization
+       NOPRINT = 0,
        NONE,
        BASIC,
        FULL,
-       LAST
+       EVERY, // after every optimization if possible
+       // These options allow instrumenting the pass pipeline
+       // and match ExtensionPointTy in PassManagerBuilder
+       EarlyAsPossible,
+       ModuleOptimizerEarly,
+       LoopOptimizerEnd,
+       ScalarOptimizerLate,
+       OptimizerLast,
+       VectorizerStart,
+       EnabledOnOptLevel0,
+       Peephole,
+       // Updating these? Be sure to leave LAST as the last
+       // element and update llvmStageName to reflect this order.
+       LAST,
      } llvmStageNum_t;
 }
 using llvmStageNum::llvmStageNum_t;

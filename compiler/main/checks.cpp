@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -52,8 +52,10 @@ static void checkIsIterator(); // Ensure each iterator is flagged so.
 static void checkAggregateTypes(); // Checks that class and record types have
                                    // default initializers and default type
                                    // constructors.
+static void check_afterInlineFunctions();
 static void checkResolveRemovedPrims(void); // Checks that certain primitives
                                             // are removed after resolution
+static void checkNoRecordDeletes();  // No 'delete' on records.
 static void checkTaskRemovedPrims(); // Checks that certain primitives are
                                      // removed after task functions are
                                      // created.
@@ -173,13 +175,6 @@ void check_replaceArrayAccessesWithRefTemps()
   check_afterResolveIntents();
 }
 
-void check_processIteratorYields() {
-  check_afterEveryPass();
-  check_afterNormalization();
-  check_afterResolution();
-  check_afterResolveIntents();
-}
-
 void check_flattenFunctions()
 {
   check_afterEveryPass();
@@ -278,6 +273,7 @@ void check_inlineFunctions()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_scalarReplace()
@@ -287,6 +283,7 @@ void check_scalarReplace()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
   // Suggestion: Ensure no constant expressions.
 }
 
@@ -297,6 +294,7 @@ void check_refPropagation()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_copyPropagation()
@@ -306,6 +304,7 @@ void check_copyPropagation()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 
@@ -316,17 +315,8 @@ void check_deadCodeElimination()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
   // Suggestion: Ensure no dead code.
-}
-
-void check_removeWrapRecords()
-{
-  check_afterEveryPass();
-  check_afterNormalization();
-  check_afterCallDestructors();
-  check_afterLowerIterators();
-  check_afterResolveIntents();
-  // Suggestion: Ensure no more wrap records.
 }
 
 void check_removeEmptyRecords()
@@ -336,6 +326,7 @@ void check_removeEmptyRecords()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
   // Suggestion: Ensure no empty records.
 }
 
@@ -346,6 +337,7 @@ void check_localizeGlobals()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_loopInvariantCodeMotion()
@@ -355,6 +347,7 @@ void check_loopInvariantCodeMotion()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_prune2()
@@ -364,6 +357,7 @@ void check_prune2()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
   // Suggestion: Ensure no dead classes or functions.
 }
 
@@ -374,6 +368,7 @@ void check_returnStarTuplesByRefArgs()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_insertWideReferences()
@@ -383,6 +378,7 @@ void check_insertWideReferences()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_optimizeOnClauses()
@@ -392,6 +388,7 @@ void check_optimizeOnClauses()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_addInitCalls()
@@ -401,6 +398,7 @@ void check_addInitCalls()
   check_afterCallDestructors();
   check_afterLowerIterators();
   check_afterResolveIntents();
+  check_afterInlineFunctions();
 }
 
 void check_insertLineNumbers()
@@ -409,6 +407,7 @@ void check_insertLineNumbers()
   check_afterNormalization();
   check_afterCallDestructors();
   check_afterLowerIterators();
+  check_afterInlineFunctions();
 }
 
 void check_denormalize() {
@@ -465,6 +464,7 @@ static void check_afterResolution()
   checkReturnTypesHaveRefTypes();
   if (fVerify)
   {
+    checkNoRecordDeletes();
     checkTaskRemovedPrims();
     checkResolveRemovedPrims();
 // Disabled for now because user warnings should not be logged multiple times:
@@ -551,6 +551,22 @@ static void check_afterLowerIterators()
     checkArgsAndLocals();
 }
 
+static void check_afterInlineFunctions() {
+  if (fVerify) {
+    forv_Vec(DefExpr, def, gDefExprs) {
+      Symbol* sym = def->sym;
+      if (isLcnSymbol(sym) &&
+          def->inTree() && // symbol is in the tree
+          def->parentSymbol->hasFlag(FLAG_WIDE_REF) == false) {
+        if (sym->type->symbol->hasFlag(FLAG_REF) ||
+            sym->type->symbol->hasFlag(FLAG_WIDE_REF)) {
+          INT_FATAL("Found reference type: %s[%d]\n", sym->cname, sym->id);
+        }
+      }
+    }
+  }
+}
+
 static void checkIsIterator() {
   forv_Vec(CallExpr, call, gCallExprs) {
     if (call->isPrimitive(PRIM_YIELD)) {
@@ -569,16 +585,21 @@ static void checkIsIterator() {
 // Checks that class and record types have a default initializer and a default
 // type constructor.
 //
-static void checkAggregateTypes()
-{
-  for_alive_in_Vec(AggregateType, at, gAggregateTypes)
-  {
-    if (! at->defaultInitializer && at->initializerStyle != DEFINES_INITIALIZER)
-      INT_FATAL(at, "aggregate type did not define an initializer and has no default constructor");
-    if (! at->defaultTypeConstructor &&
-        at->initializerStyle != DEFINES_INITIALIZER)
-      INT_FATAL(at, "aggregate type did not define an initializer and "
+static void checkAggregateTypes() {
+  for_alive_in_Vec(AggregateType, at, gAggregateTypes) {
+    if (at->defaultInitializer == NULL &&
+        at->initializerStyle   == DEFINES_CONSTRUCTOR) {
+      INT_FATAL(at,
+                "aggregate type did not define an initializer "
+                "and has no default constructor");
+    }
+
+    if (at->typeConstructor  == NULL &&
+        at->initializerStyle != DEFINES_CONSTRUCTOR) {
+      INT_FATAL(at,
+                "aggregate type did not define an initializer and "
                 "has no default type constructor");
+    }
   }
 }
 
@@ -620,6 +641,16 @@ checkResolveRemovedPrims(void) {
       }
     }
   }
+}
+
+static void checkNoRecordDeletes() {
+  // No need to do for_alive_in_Vec - there shouldn't be any, period.
+  // User errors are to be detected by chpl__delete() in the modules.
+  forv_Vec(CallExpr, call, gCallExprs)
+    if (FnSymbol* fn = call->resolvedFunction())
+      if(fn->hasFlag(FLAG_DESTRUCTOR))
+        if (!isClass(call->get(1)->typeInfo()->getValType()))
+          INT_FATAL(call, "delete not on a class");
 }
 
 static void
@@ -688,8 +719,10 @@ checkAutoCopyMap()
   {
     if (hasAutoCopyForType(key)) {
       FnSymbol* fn = getAutoCopyForType(key);
-      Type* baseType = fn->getFormal(1)->getValType();
-      INT_ASSERT(baseType == key);
+      if (fn->numFormals() > 0) {
+        Type* baseType = fn->getFormal(1)->getValType();
+        INT_ASSERT(baseType == key);
+      }
     }
   }
 }
@@ -724,7 +757,7 @@ checkFormalActualBaseTypesMatch()
             // Exact match, so OK.
             continue;
 
-          if (isClass(formal->type))
+          if (isClassLike(formal->type))
             // dtNil can be converted to any class type, so OK.
             continue;
 

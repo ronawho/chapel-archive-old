@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -40,8 +40,6 @@ static void normalizeNestedFunctionExpressions(FnSymbol* fn);
 
 static void normalizeLoopIterExpressions(FnSymbol* fn);
 
-static void flattenScopelessBlock(BlockStmt* block);
-
 static void destructureTupleAssignment(CallExpr* call);
 
 static void flattenPrimaryMethod(TypeSymbol* ts, FnSymbol* fn);
@@ -49,8 +47,6 @@ static void flattenPrimaryMethod(TypeSymbol* ts, FnSymbol* fn);
 static void applyAtomicTypeToPrimaryMethod(TypeSymbol* ts, FnSymbol* fn);
 
 static void changeCastInWhere(FnSymbol* fn);
-
-static void addParensToDeinitFns(FnSymbol* fn);
 
 static void fixupVoidReturnFn(FnSymbol* fn);
 
@@ -95,7 +91,7 @@ static void cleanup(ModuleSymbol* module) {
 
     if (BlockStmt* block = toBlockStmt(ast)) {
       if (block->blockTag == BLOCK_SCOPELESS && block->list != NULL) {
-        flattenScopelessBlock(block);
+        block->flattenAndRemove();
       }
 
     } else if (CallExpr* call = toCallExpr(ast)) {
@@ -112,7 +108,6 @@ static void cleanup(ModuleSymbol* module) {
         }
 
         changeCastInWhere(fn);
-        addParensToDeinitFns(fn);
         fixupVoidReturnFn(fn);
       }
     }
@@ -137,6 +132,21 @@ static void normalizeNestedFunctionExpressions(FnSymbol* fn) {
     def->replace(new UnresolvedSymExpr(fn->name));
 
     ct->addDeclarations(def);
+
+  } else if (ArgSymbol* arg = toArgSymbol(def->parentSymbol)) {
+    if (fn->hasFlag(FLAG_IF_EXPR_FN) && arg->typeExpr == NULL) {
+      USR_FATAL_CONT(fn,
+                     "cannot currently use an if expression as the default "
+                     "value for an argument when the argument's type is "
+                     "inferred");
+
+    } else {
+      Expr* stmt = def->getStmtExpr();
+
+      def->replace(new UnresolvedSymExpr(fn->name));
+
+      stmt->insertBefore(def);
+    }
 
   } else {
     Expr* stmt = def->getStmtExpr();
@@ -185,22 +195,6 @@ static void normalizeLoopIterExpressions(FnSymbol* fn) {
 
 /************************************* | **************************************
 *                                                                             *
-* Move the statements in a block out of the block                             *
-*                                                                             *
-************************************** | *************************************/
-
-static void flattenScopelessBlock(BlockStmt* block) {
-  for_alist(stmt, block->body) {
-    stmt->remove();
-
-    block->insertBefore(stmt);
-  }
-
-  block->remove();
-}
-
-/************************************* | **************************************
-*                                                                             *
 * destructureTupleAssignment                                                  *
 *                                                                             *
 *    (i,j) = expr;    ==>    i = expr(1);                                     *
@@ -223,7 +217,7 @@ static void destructureTupleAssignment(CallExpr* call) {
   CallExpr* parent = toCallExpr(call->parentExpr);
 
   if (parent               != NULL &&
-      parent->isNamed("=") == true &&
+      parent->isNamedAstr(astrSequals) &&
       parent->get(1)       == call) {
     VarSymbol* rtmp = newTemp();
     Expr*      S1   = new CallExpr(PRIM_MOVE, rtmp, parent->get(2)->remove());
@@ -410,18 +404,5 @@ static void changeCastInWhere(FnSymbol* fn) {
         }
       }
     }
-  }
-}
-
-/************************************* | **************************************
-*                                                                             *
-* Make paren-less decls act as paren-ful.                                     *
-* Otherwise "arg.deinit()" in proc chpl__delete(arg) would not resolve.       *
-*                                                                             *
-************************************** | *************************************/
-
-static void addParensToDeinitFns(FnSymbol* fn) {
-  if (fn->hasFlag(FLAG_DESTRUCTOR)) {
-    fn->removeFlag(FLAG_NO_PARENS);
   }
 }

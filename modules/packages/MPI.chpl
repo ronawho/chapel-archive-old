@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -192,7 +192,7 @@ module MPI {
   use SysCTypes;
   require "mpi.h";
 
-  use UtilReplicatedVar;
+  use ReplicatedVar;
 
   /*
      Automatically initializes MPI (if not already initialized by the runtime), and
@@ -290,7 +290,8 @@ module MPI {
             var cookieJar = pmiGniCookie.split(":");
             const lastcookie = cookieJar.domain.last;
             cookieJar[lastcookie] = ((cookieJar[lastcookie]):int + 1):string;
-            C_Env.setenv("PMI_GNI_COOKIE",("%s".format(":".join(cookieJar))).c_str(),1);
+            const newVal = ":".join(cookieJar);
+            C_Env.setenv("PMI_GNI_COOKIE",newVal.c_str(),1);
           }
         }
     }

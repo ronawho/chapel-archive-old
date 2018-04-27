@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -223,6 +223,7 @@ static FnSymbol* expandVarArgsQuery(FnSymbol* fn, CallInfo& info) {
 
         retval = fn->copy(&substitutions);
         retval->addFlag(FLAG_INVISIBLE_FN);
+        retval->instantiatedFrom = fn;
 
         fn->defPoint->insertBefore(new DefExpr(retval));
 
@@ -498,11 +499,11 @@ static CallExpr* expandVarArgString(FnSymbol*      fn,
 
   if (formal->hasFlag(FLAG_TYPE_VARIABLE) == true) {
     retval = new CallExpr("_type_construct__tuple");
-  } else {
-    retval = new CallExpr("_construct__tuple");
-  }
 
-  retval->insertAtTail(new_IntSymbol(n));
+    retval->insertAtTail(new_IntSymbol(n));
+  } else {
+    retval = new CallExpr("_build_tuple");
+  }
 
   // Create a local for every blank string
   for (int i = 0; i < n; i++) {
@@ -551,7 +552,7 @@ static CallExpr* buildTupleCall(ArgSymbol* formal, const Formals& formals) {
   if (formal->hasFlag(FLAG_TYPE_VARIABLE) == true) {
     retval = new CallExpr("_type_construct__tuple");
   } else {
-    retval = new CallExpr("_construct__tuple");
+    retval = new CallExpr(tupleInitName);
   }
 
   retval->insertAtTail(new_IntSymbol(n));

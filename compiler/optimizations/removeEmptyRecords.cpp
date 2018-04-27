@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -46,8 +46,7 @@ removeEmptyRecords() {
   while (change) {
     change = false;
     forv_Vec(AggregateType, ct, gAggregateTypes) {
-      if (isRecord(ct) && ct->symbol->defPoint->parentSymbol &&
-          !ct->symbol->hasFlag(FLAG_EXTERN)) {
+      if (isRecord(ct) && ct->inTree() && !ct->symbol->hasFlag(FLAG_EXTERN)) {
         bool empty = true;
         for_fields(field, ct) {
           if (emptyRecordTypeSet.count(field->type) == 0) {

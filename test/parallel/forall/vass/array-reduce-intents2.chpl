@@ -11,7 +11,8 @@ var dataM: [dataDom] int = [i in 1..n] i % b + 1;
 var dataB: [dataDom] int = 1..n;
 
 type HistM = [1..b] int;
-var histoM, histoP: HistM;
+var histoM: HistM = 1;
+var histoP: HistM = 0;
 
 proc main {
 
@@ -34,5 +35,5 @@ class PlusReduceOp: ReduceScanOp {
   proc accumulate(elm)  { value = value + elm; }
   proc combine(other)   { value = value + other.value; }
   proc generate()       return value;
-  proc clone()          return new PlusReduceOp(eltType=eltType);
+  proc clone()          return new unmanaged PlusReduceOp(eltType=eltType);
 }

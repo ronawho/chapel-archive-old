@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -88,14 +88,18 @@ astr(const char* s1, const char* s2, const char* s3, const char* s4,
 
 const char* astr(const char* s1)
 {
+  const char* ss = chapelStringsTable.get(s1);
+  if (ss)
+    // return an existing entry
+    return ss;
+
+  // add a new entry - always a fresh malloc
   int len;
   len = strlen(s1);
   char* s = (char*)malloc(len+1);
   strcpy(s, s1);
-  const char* t = canonicalize_string(s);
-  if (s != t)
-    free(s);
-  return t;
+  chapelStringsTable.put(s,s);
+  return s;
 }
 
 const char* astr(const std::string& s)
@@ -332,4 +336,18 @@ int minimumPrefix(std::string s) {
  */
 std::string ltrimAllLines(std::string s) {
   return erasePrefix(s, minimumPrefix(s));
+}
+
+/*
+ * Gather words from the string and store them into the array.
+ * These words are arguments to a program.
+ */
+void readArgsFromString(std::string s, std::vector<std::string>& args) {
+  if (s != "") {
+    //split s by spaces
+    std::stringstream argsStream(s);
+    std::string word;
+    while(argsStream >> word)
+      args.push_back(word);
+  }
 }

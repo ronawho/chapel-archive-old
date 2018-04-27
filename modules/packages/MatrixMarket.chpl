@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+pragma "error mode fatal"
 module MatrixMarket {
 
   use IO;
@@ -25,6 +26,7 @@ module MatrixMarket {
   enum MMTypes { Real, Complex, Pattern }
   enum MMFormat { Symmetric, General }
 
+  pragma "use default init"
   record MMInfo {
     var mm_coordfmt:MMCoordFormat;
     var mm_types:MMTypes;
@@ -91,7 +93,8 @@ module MatrixMarket {
       var headers_written:bool;
       var last_rowno:int;
 
-      proc MMWriter(type eltype, const fname:string) {
+      proc init(type eltype, const fname:string) {
+         this.eltype = eltype;
          fd = open(fname, iomode.cw, iokind.native);
          fout = fd.writer(start=0);
          headers_written=false;
@@ -160,7 +163,7 @@ module MatrixMarket {
    }
 
 proc mmwrite(const fname:string, mat:[?Dmat] ?T) where mat.domain.rank == 2 {
-   var mw = new MMWriter(T, fname);
+   var mw = new unmanaged MMWriter(T, fname);
    mw.write_headers(-1,-1,-1);
 
    var (ncols, nnz) = (0,0);
@@ -193,7 +196,7 @@ class MMReader {
    var fin:channel(false, iokind.dynamic, true);
    var finfo:MMInfo;
 
-   proc MMReader(const fname:string) {
+   proc init(const fname:string) {
       fd = open(fname, iomode.r, hints=IOHINT_SEQUENTIAL|IOHINT_CACHED);
       fin = fd.reader(start=0, hints=IOHINT_SEQUENTIAL|IOHINT_CACHED);
    }
@@ -393,7 +396,7 @@ class MMReader {
      :type type eltype
  */
 proc mmread(type eltype, const fname:string) {
-   var mr = new MMReader(fname);
+   var mr = new unmanaged MMReader(fname);
    var toret = mr.read_array_from_file(eltype);
    delete mr;
    return toret;
@@ -404,7 +407,7 @@ proc mmread(type eltype, const fname:string) {
      :type type eltype
  */
 proc mmreadsp(type eltype, const fname:string) {
-   var mr = new MMReader(fname);
+   var mr = new unmanaged MMReader(fname);
    var toret = mr.read_sp_array_from_file(eltype);
    delete mr;
    return toret;

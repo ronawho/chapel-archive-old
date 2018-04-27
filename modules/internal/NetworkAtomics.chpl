@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -75,6 +75,7 @@ module NetworkAtomics {
 
   // int(64)
   pragma "atomic type"
+  pragma "use default init"
   record ratomic_int64 {
     var _v: int(64);
     inline proc const read(order:memory_order = memory_order_seq_cst):int(64) {
@@ -183,7 +184,7 @@ module NetworkAtomics {
     }
 
     proc const writeThis(x) {
-      x.write(read());
+      x <~> read();
     }
   }
 
@@ -269,6 +270,7 @@ module NetworkAtomics {
 
   // int32
   pragma "atomic type"
+  pragma "use default init"
   record ratomic_int32 {
     var _v: int(32);
     inline proc const read(order:memory_order = memory_order_seq_cst):int(32) {
@@ -374,7 +376,7 @@ module NetworkAtomics {
     }
 
     proc const writeThis(x) {
-      x.write(read());
+      x <~> read();
     }
   }
 
@@ -460,6 +462,7 @@ module NetworkAtomics {
 
   // uint(64)
   pragma "atomic type"
+  pragma "use default init"
   record ratomic_uint64 {
     var _v: uint(64);
     inline proc const read(order:memory_order = memory_order_seq_cst):uint(64) {
@@ -565,7 +568,7 @@ module NetworkAtomics {
     }
 
     proc const writeThis(x) {
-      x.write(read());
+      x <~> read();
     }
   }
 
@@ -651,6 +654,7 @@ module NetworkAtomics {
 
   // uint(32)
   pragma "atomic type"
+  pragma "use default init"
   record ratomic_uint32 {
     var _v: uint(32);
     inline proc const read(order:memory_order = memory_order_seq_cst):uint(32) {
@@ -755,8 +759,8 @@ module NetworkAtomics {
       _v = value;
     }
 
-    proc writeThis(const x) {
-      x.write(read());
+    proc const writeThis(x) {
+      x <~> read();
     }
   }
 
@@ -790,6 +794,7 @@ module NetworkAtomics {
 
   // bool, implemented with int(64)
   pragma "atomic type"
+  pragma "use default init"
   record ratomicbool {
     var _v: int(64);
     inline proc const read(order:memory_order = memory_order_seq_cst):bool {
@@ -847,7 +852,7 @@ inline proc compareExchangeWeak(expected:bool, desired:bool,
     }
 
     proc const writeThis(x) {
-      x.write(read());
+      x <~> read();
     }
   }
 
@@ -911,6 +916,7 @@ inline proc compareExchangeWeak(expected:bool, desired:bool,
                                               ref result:bool(32));
   
   pragma "atomic type"
+  pragma "use default init"
   record ratomic_real64 {
     var _v: real(64);
     inline proc const read(order:memory_order = memory_order_seq_cst):real(64) {
@@ -1005,7 +1011,7 @@ inline proc compareExchangeWeak(expected:bool, desired:bool,
     }
 
     proc const writeThis(x) {
-      x.write(read());
+      x <~> read();
     }
   }
 

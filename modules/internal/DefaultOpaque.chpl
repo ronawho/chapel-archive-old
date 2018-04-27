@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  *
  * The entirety of this work is licensed under the Apache License,
@@ -63,15 +63,16 @@ module DefaultOpaque {
   class DefaultOpaqueDom: BaseOpaqueDom {
     type idxType = _OpaqueIndex;
     param parSafe: bool;
-    var dist: DefaultDist;
-    var adomain: DefaultAssociativeDom(idxType=_OpaqueIndex, parSafe=parSafe);
+    var dist: unmanaged DefaultDist;
+    var adomain: unmanaged DefaultAssociativeDom(idxType=_OpaqueIndex, parSafe=parSafe);
   
     proc linksDistribution() param return false;
     proc dsiLinksDistribution()     return false;
   
-    proc DefaultOpaqueDom(dist: DefaultDist, param parSafe: bool) {
+    proc init(dist: unmanaged DefaultDist, param parSafe: bool) {
+      this.parSafe = parSafe;
       this.dist = dist;
-      adomain = new DefaultAssociativeDom(_OpaqueIndex, dist, parSafe=parSafe);
+      adomain = new unmanaged DefaultAssociativeDom(_OpaqueIndex, dist, parSafe=parSafe);
     }
   
     proc deinit() {
@@ -98,6 +99,10 @@ module DefaultOpaque {
       adomain.dsiSetIndices(b);
     }
   
+    proc dsiAssignDomain(rhs: domain, lhsPrivate:bool) {
+      chpl_assignDomainWithIndsIterSafeForRemoving(this, rhs);
+    }
+
     iter these() {
       for i in adomain do
         yield i;
@@ -112,7 +117,13 @@ module DefaultOpaque {
       for i in adomain.these(tag=iterKind.follower, followThis) do
         yield i;
     }
-  
+
+    iter dsiIndsIterSafeForRemoving() {
+      for i in adomain.dsiIndsIterSafeForRemoving() {
+        yield i;
+      }
+    }
+
     proc dsiMember(ind: idxType) {
       return adomain.dsiMember(ind);
     }
@@ -122,7 +133,7 @@ module DefaultOpaque {
     }
   
     proc dsiBuildArray(type eltType) {
-      var ia = new DefaultOpaqueArr(eltType=eltType, idxType=idxType, parSafe=parSafe, dom=this);
+      var ia = new unmanaged DefaultOpaqueArr(eltType=eltType, idxType=idxType, parSafe=parSafe, dom=_to_unmanaged(this));
       return ia;
     }
   }
@@ -143,14 +154,14 @@ module DefaultOpaque {
   }
   
   
+  pragma "use default init"
   class DefaultOpaqueArr: BaseArr {
     type eltType;
     type idxType;
     param parSafe: bool;
   
-    var dom: DefaultOpaqueDom(idxType=idxType, parSafe=parSafe);
-    var anarray = new DefaultAssociativeArr(eltType=eltType, idxType=idxType,
-                                            parSafeDom=parSafe, dom=dom.adomain);
+    var dom: unmanaged DefaultOpaqueDom(idxType=idxType, parSafe=parSafe);
+    var anarray = new unmanaged DefaultAssociativeArr(eltType=eltType, idxType=idxType, parSafeDom=parSafe, dom=dom.adomain);
   
     proc deinit() {
       delete anarray;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2017 Cray Inc.
+ * Copyright 2004-2018 Cray Inc.
  * Other additional copyright holders may be indicated within.
  * 
  * The entirety of this work is licensed under the Apache License,
@@ -25,9 +25,6 @@
 #include "chpl-mem.h"
 #include "chpltypes.h"
 #include "error.h"
-
-// This file needs to be able to use real allocator names
-#include "chpl-mem-no-warning-macros.h"
 
 // This file always declares this function at least.
 void chpl_mem_replace_malloc_if_needed(void);
