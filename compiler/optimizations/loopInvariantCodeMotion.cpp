@@ -898,14 +898,6 @@ static void computeLoopInvariants(std::vector<SymExpr*>& loopInvariants,
         mightHaveBeenDeffedElseWhere = true;
       }
     }
-    if (symExpr->symbol()->isRef()) {
-        mightHaveBeenDeffedElseWhere = true;
-    }
-    for_set(Symbol, aliasSym, aliases[symExpr->symbol()]) {
-      if (aliasSym->isRef()) {
-        mightHaveBeenDeffedElseWhere = true;
-      }
-    }
     //if there were no defs of the symbol, it is invariant 
     if(actualDefs.count(symExpr) == 0 && !mightHaveBeenDeffedElseWhere) {
       loopInvariantOperands.insert(symExpr);
