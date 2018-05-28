@@ -902,6 +902,7 @@ module DefaultRectangular {
     pragma "local field"
     var shiftedData : _ddata(eltType);
 
+    var forceSerialInit = false;
     // note: used by pychapel
     var noinit_data: bool = false;
 
@@ -956,7 +957,11 @@ module DefaultRectangular {
       }
 
       const size = blk(1) * dom.dsiDim(1).length;
-      _ddata_free(data, size);
+      if forceSerialInit {
+        _ddata_free_serial(data, size);
+      } else {
+        _ddata_free(data, size);
+      }
     }
 
     inline proc theData ref {
@@ -1063,13 +1068,18 @@ module DefaultRectangular {
 
       // Allow DR array initialization to pass in existing data
       if data == nil {
-        if !localeModelHasSublocales {
-          data = _ddata_allocate(eltType, size);
+        var subloc = c_sublocid_none;
+        if localeModelHasSublocales && here.getChildCount() > 1 then
+          subloc = c_sublocid_all;
+
+        const initMethod = chpl_computeArrayInitMethod(size, eltType);
+
+        if initMethod == ArrayInit.serialInit {
+          forceSerialInit = true;
+          data = _ddata_allocate_serial(eltType, size);
         } else {
-          data = _ddata_allocate(eltType, size,
-                                 subloc = (if here.getChildCount() > 1
-                                           then c_sublocid_all
-                                           else c_sublocid_none));
+          forceSerialInit = false;
+          data = _ddata_allocate(eltType, size, subloc, initMethod);
         }
       }
 

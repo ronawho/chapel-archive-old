@@ -758,7 +758,7 @@ module ChapelBase {
     return initMethod;
   }
 
-  proc init_elts(x, s, type t, initMethod=chpl_computeArrayInitMethod(s, t)) : void {
+  proc init_elts(x, s, type t, initMethod) : void {
     // Q: why is the declaration of 'y' in the following loops?
     //
     // A: so that if the element type is something like an array,
@@ -822,20 +822,32 @@ module ChapelBase {
   }
 
   inline proc _ddata_allocate(type eltType, size: integral,
-                              subloc = c_sublocid_none) {
+                              subloc = c_sublocid_none,
+                              initMethod = chpl_computeArrayInitMethod(size, eltType)) {
     var ret: _ddata(eltType);
-    const initMethod = chpl_computeArrayInitMethod(size, eltType);
-    const serialInit = initMethod == ArrayInit.serialInit;
     var callAgain: bool;
-    __primitive("array_alloc", ret, size, subloc, c_ptrTo(callAgain), c_nil, serialInit);
+    __primitive("array_alloc", ret, size, subloc, c_ptrTo(callAgain), c_nil, true);
     init_elts(ret, size, eltType, initMethod);
     if callAgain then
-      __primitive("array_alloc", ret, size, subloc, c_nil, ret, serialInit);
+      __primitive("array_alloc", ret, size, subloc, c_nil, ret, true);
+    return ret;
+  }
+
+  inline proc _ddata_allocate_serial(type eltType, size: integral) {
+    var ret: _ddata(eltType);
+    var callAgain: bool;
+    __primitive("array_alloc", ret, size, c_sublocid_none, c_ptrTo(callAgain), c_nil, false);
+    init_elts(ret, size, eltType, ArrayInit.serialInit);
+    assert(callAgain == false);
     return ret;
   }
 
   inline proc _ddata_free(data: _ddata, size: integral) {
-    __primitive("array_free", data, size);
+    __primitive("array_free", data, size, true);
+  }
+
+  inline proc _ddata_free_serial(data: _ddata, size: integral) {
+    __primitive("array_free", data, size, false);
   }
 
   inline proc ==(a: _ddata, b: _ddata) where a.eltType == b.eltType {

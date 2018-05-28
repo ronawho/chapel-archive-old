@@ -141,7 +141,8 @@ chpl_bool chpl_mem_size_justifies_comm_alloc(size_t size) {
 
 static inline
 void* chpl_mem_array_alloc(size_t nmemb, size_t eltSize, c_sublocid_t subloc,
-                           chpl_bool* callAgain, void* repeat_p, chpl_bool ser,
+                           chpl_bool* callAgain, void* repeat_p,
+                           chpl_bool allow_comm_alloc,
                            int32_t lineno, int32_t filename) {
   const size_t size = nmemb * eltSize;
   void* p;
@@ -165,9 +166,10 @@ void* chpl_mem_array_alloc(size_t nmemb, size_t eltSize, c_sublocid_t subloc,
 
     p = NULL;
     *callAgain = false;
-    if (!ser && chpl_mem_size_justifies_comm_alloc(size)) {
+    if (allow_comm_alloc && chpl_mem_size_justifies_comm_alloc(size)) {
       p = chpl_comm_regMemAlloc(size, CHPL_RT_MD_ARRAY_ELEMENTS,
                                 lineno, filename);
+
       if (p != NULL) {
         *callAgain = true;
         do_localize = (subloc == c_sublocid_all) ? true : false;
@@ -200,17 +202,18 @@ static inline
 void* chpl_mem_wide_array_alloc(int32_t dstNode, size_t nmemb, size_t eltSize,
                                 c_sublocid_t subloc,
                                 chpl_bool* callAgain, void* repeat_p,
-                                chpl_bool ser,
+                                chpl_bool allow_comm_alloc,
                                 int32_t lineno, int32_t filename) {
   if (dstNode != chpl_nodeID)
     chpl_error("array vector data is not local", lineno, filename);
-  return chpl_mem_array_alloc(nmemb, eltSize, subloc, callAgain, repeat_p, ser,
-                              lineno, filename);
+  return chpl_mem_array_alloc(nmemb, eltSize, subloc, callAgain, repeat_p,
+                              allow_comm_alloc, lineno, filename);
 }
 
 static inline
 void chpl_mem_array_free(void* p,
                          size_t nmemb, size_t eltSize,
+                         chpl_bool allow_comm_alloc,
                          int32_t lineno, int32_t filename) {
   const size_t size = nmemb * eltSize;
 
@@ -220,7 +223,7 @@ void chpl_mem_array_free(void* p,
   // comm layer says it didn't come from there, free it in the memory
   // layer.
   //
-  if (chpl_mem_size_justifies_comm_alloc(size)
+  if (allow_comm_alloc && chpl_mem_size_justifies_comm_alloc(size)
       && chpl_comm_regMemFree(p, size)) {
     return;
   }
@@ -231,10 +234,11 @@ void chpl_mem_array_free(void* p,
 static inline
 void chpl_mem_wide_array_free(int32_t dstNode, void* p,
                               size_t nmemb, size_t eltSize,
+                              chpl_bool allow_comm_alloc,
                               int32_t lineno, int32_t filename) {
   if (dstNode != chpl_nodeID)
     chpl_error("array vector data is not local", lineno, filename);
-  chpl_mem_array_free(p, nmemb, eltSize, lineno, filename);
+  chpl_mem_array_free(p, nmemb, eltSize, allow_comm_alloc, lineno, filename);
 }
 
 // Provide a handle to instrument Chapel calls to memcpy.

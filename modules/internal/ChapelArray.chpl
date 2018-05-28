@@ -4131,9 +4131,9 @@ module ChapelArray {
     var data:_ddata(iteratorToArrayElementType(ir.type)) = nil;
 
     var callAgain: bool;
-    var subloc = c_sublocid_none;
+    const subloc = c_sublocid_none;
+    const allowCommAlloc = true;
 
-    const serialInit = true;
     for elt in ir {
 
       // Future: we should generally remove this copy.
@@ -4155,7 +4155,7 @@ module ChapelArray {
 
         // data allocation should match DefaultRectangular
         __primitive("array_alloc", data, size, subloc,
-                    c_ptrTo(callAgain), c_nil, serialInit);
+                    c_ptrTo(callAgain), c_nil, allowCommAlloc);
 
         // Now copy the data over
         for i in 0..#oldSize {
@@ -4179,7 +4179,7 @@ module ChapelArray {
 
       // let the comm layer adjust array allocation
       if callAgain then
-        __primitive("array_alloc", data, size, subloc, c_nil, data, serialInit);
+        __primitive("array_alloc", data, size, subloc, c_nil, data, allowCommAlloc);
 
       // Now construct a DefaultRectangular array using the data
       pragma "insert auto destroy"
@@ -4201,9 +4201,9 @@ module ChapelArray {
       var D = { 1 .. 0 };
 
       // Create space for 1 element as a placeholder.
-      __primitive("array_alloc", data, 1, subloc, c_ptrTo(callAgain), c_nil, serialInit);
+      __primitive("array_alloc", data, 1, subloc, c_ptrTo(callAgain), c_nil, allowCommAlloc);
       if callAgain then
-        __primitive("array_alloc", data, 1, subloc, c_nil, data, serialInit);
+        __primitive("array_alloc", data, 1, subloc, c_nil, data, allowCommAlloc);
 
       // TODO: this use of data[0].type will result in nil pointer
       // dereferences in the event that we're converting a iterator

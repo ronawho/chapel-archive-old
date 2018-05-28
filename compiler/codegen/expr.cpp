@@ -107,6 +107,7 @@ static void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3);
 static void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3, GenRet a4);
 static void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3, GenRet a4, GenRet a5);
 static void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3, GenRet a4, GenRet a5, GenRet a6);
+static void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3, GenRet a4, GenRet a5, GenRet a6, GenRet a7);
 
 static GenRet codegenZero();
 static GenRet codegenZero32();
@@ -2610,7 +2611,6 @@ void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3,
   codegenCall(fnName, args);
 }
 
-/*
 static
 void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3,
                  GenRet a4, GenRet a5, GenRet a6, GenRet a7)
@@ -2625,7 +2625,6 @@ void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3,
   args.push_back(a7);
   codegenCall(fnName, args);
 }
-*/
 
 static
 void codegenCall(const char* fnName, GenRet a1, GenRet a2, GenRet a3,
@@ -3552,7 +3551,7 @@ GenRet CallExpr::codegenPrimitive() {
     // get(3): desired sublocale
     // get(4): (temporary) make 2nd call?
     // get(5): (temporary) 2nd call: repeat previously returned ptr
-    // get(6): (temporary) whether the array will be initialized serially
+    // get(6): (temporary) whether comm layer allocation is permitted
     GenRet dst = get(1);
     GenRet alloced;
 
@@ -3600,6 +3599,7 @@ GenRet CallExpr::codegenPrimitive() {
   case PRIM_ARRAY_FREE: {
     // get(1): memory address
     // get(2): number of elements
+    // get(3): whether comm layer allocation was permitted in array_alloc
     if (fNoMemoryFrees == false) {
       GenRet data = get(1);
       GenRet numElts;
@@ -3616,12 +3616,12 @@ GenRet CallExpr::codegenPrimitive() {
         Type*   eltType = getDataClassType(addr->type->symbol)->typeInfo();
         codegenCall("chpl_mem_wide_array_free", node, ptr,
                     numElts, codegenSizeof(eltType),
-                    get(3), get(4));
+                    get(3), get(4), get(5));
       } else {
         Type* eltType = getDataClassType(get(1)->typeInfo()->symbol)->typeInfo();
         codegenCall("chpl_mem_array_free", data,
                     numElts, codegenSizeof(eltType),
-                    get(3), get(4));
+                    get(3), get(4), get(5));
       }
     }
 
