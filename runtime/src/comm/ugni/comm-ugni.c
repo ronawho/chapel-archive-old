@@ -1216,19 +1216,19 @@ static gni_fma_cmd_type_t nic_amos_ari_fetch[]  // Aries, fetching
                -1,                       // put_64
                -1,                       // get_32
                -1,                       // get_64
-               GNI_FMA_ATOMIC2_FSWAP_S,  // xchg_32
-               GNI_FMA_ATOMIC2_FSWAP,    // xchg_64
-               GNI_FMA_ATOMIC2_FCSWAP_S, // cmpxchg_32
-               GNI_FMA_ATOMIC2_FCSWAP,   // cmpxchg_64
-               GNI_FMA_ATOMIC2_FAND_S,   // and_i32
-               GNI_FMA_ATOMIC2_FAND,     // and_i64
-               GNI_FMA_ATOMIC2_FOR_S,    // or_i32
-               GNI_FMA_ATOMIC2_FOR,      // or_i64
-               GNI_FMA_ATOMIC2_FXOR_S,   // xor_i32
-               GNI_FMA_ATOMIC2_FXOR,     // xor_i64
-               GNI_FMA_ATOMIC2_FIADD_S,  // add_i32
-               GNI_FMA_ATOMIC2_FIADD,    // add_i64
-               GNI_FMA_ATOMIC2_FFPADD_S, // add_r32
+               GNI_FMA_ATOMIC2_FSWAP_SC,  // xchg_32
+               GNI_FMA_ATOMIC2_FSWAP_C,    // xchg_64
+               GNI_FMA_ATOMIC2_FCSWAP_SC, // cmpxchg_32
+               GNI_FMA_ATOMIC2_FCSWAP_C,   // cmpxchg_64
+               GNI_FMA_ATOMIC2_FAND_SC,   // and_i32
+               GNI_FMA_ATOMIC2_FAND_C,     // and_i64
+               GNI_FMA_ATOMIC2_FOR_SC,    // or_i32
+               GNI_FMA_ATOMIC2_FOR_C,      // or_i64
+               GNI_FMA_ATOMIC2_FXOR_SC,   // xor_i32
+               GNI_FMA_ATOMIC2_FXOR_C,     // xor_i64
+               GNI_FMA_ATOMIC2_FIADD_SC,  // add_i32
+               GNI_FMA_ATOMIC2_FIADD_C,    // add_i64
+               GNI_FMA_ATOMIC2_FFPADD_SC, // add_r32
                -1                        // add_r64
              };
 
@@ -1241,15 +1241,15 @@ static gni_fma_cmd_type_t nic_amos_ari[]        // Aries, non-fetching
                -1,                       // xchg_64
                -1,                       // cmpxchg_32
                -1,                       // cmpxchg_64
-               GNI_FMA_ATOMIC2_AND_S,    // and_i32
-               GNI_FMA_ATOMIC2_AND,      // and_i64
-               GNI_FMA_ATOMIC2_OR_S,     // or_i32
-               GNI_FMA_ATOMIC2_OR,       // or_i64
-               GNI_FMA_ATOMIC2_XOR_S,    // xor_i32
-               GNI_FMA_ATOMIC2_XOR,      // xor_i64
-               GNI_FMA_ATOMIC2_IADD_S,   // add_i32
-               GNI_FMA_ATOMIC2_IADD,     // add_i64
-               GNI_FMA_ATOMIC2_FPADD_S,  // add_r32
+               GNI_FMA_ATOMIC2_AND_SC,    // and_i32
+               GNI_FMA_ATOMIC2_AND_C,      // and_i64
+               GNI_FMA_ATOMIC2_OR_SC,     // or_i32
+               GNI_FMA_ATOMIC2_OR_C,       // or_i64
+               GNI_FMA_ATOMIC2_XOR_SC,    // xor_i32
+               GNI_FMA_ATOMIC2_XOR_C,      // xor_i64
+               GNI_FMA_ATOMIC2_IADD_SC,   // add_i32
+               GNI_FMA_ATOMIC2_IADD_C,     // add_i64
+               GNI_FMA_ATOMIC2_FPADD_SC,  // add_r32
                -1                        // add_r64
              };
 
@@ -2314,7 +2314,8 @@ void gni_init(gni_nic_handle_t* nih, int cdi)
   uint32_t         modes = (GNI_CDM_MODE_FORK_NOCOPY
                             | GNI_CDM_MODE_ERR_NO_KILL
                             | GNI_CDM_MODE_FMA_DEDICATED
-                            | GNI_CDM_MODE_CQ_NIC_LOCAL_PLACEMENT);
+                            | GNI_CDM_MODE_CQ_NIC_LOCAL_PLACEMENT
+                            | GNI_CDM_MODE_CACHED_AMO_ENABLED);
   uint32_t         local_address = 0;
   gni_cdm_handle_t cdm_handle;
 
