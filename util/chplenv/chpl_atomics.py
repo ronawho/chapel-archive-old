@@ -4,6 +4,7 @@ import sys
 
 import chpl_comm, chpl_compiler, chpl_platform, overrides
 from compiler_utils import CompVersion, get_compiler_version, has_std_atomics
+from chpl_home_utils import using_chapel_module
 from utils import error, memoize
 
 
@@ -51,7 +52,12 @@ def get(flag='target'):
                 elif version >= CompVersion('4.1') and not platform_val.endswith('32'):
                     atomics_val = 'intrinsics'
             elif compiler_val == 'intel' or compiler_val == 'cray-prgenv-intel':
-                atomics_val = 'intrinsics'
+                good_icc = get_compiler_version(compiler_val) >= CompVersion('18')
+                good_gcc = get_compiler_version('gnu') >= CompVersion('5.0')
+                if good_icc and good_gcc and not using_chapel_module():
+                    atomics_val = 'cstdlib'
+                else:
+                    atomics_val = 'intrinsics'
             elif compiler_val == 'cray-prgenv-cray':
                 atomics_val = 'intrinsics'
             elif compiler_val in ['allinea', 'cray-prgenv-allinea']:

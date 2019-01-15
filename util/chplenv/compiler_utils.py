@@ -28,7 +28,7 @@ def get_compiler_name(compiler):
 @memoize
 def get_compiler_version(compiler):
     version_string = '0'
-    if 'gnu' in compiler:
+    if 'gnu' in compiler or 'intel' in compiler:
         # Asssuming the 'compiler' version matches the gcc version
         # e.g., `mpicc -dumpversion == gcc -dumpversion`
         version_string = run_command([get_compiler_name(compiler), '-dumpversion'])
