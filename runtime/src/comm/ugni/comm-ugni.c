@@ -723,6 +723,7 @@ typedef struct {
   atomic_bool        busy CACHE_LINE_ALIGN;
   cq_cnt_atomic_t    cq_cnt_curr CACHE_LINE_ALIGN;
   chpl_bool          firmly_bound;
+  chpl_bool          is_polling_thread;
   gni_nic_handle_t   nih;
   gni_ep_handle_t*   remote_eps;
   gni_cq_handle_t    cqh;
@@ -2272,6 +2273,7 @@ void gni_setup_per_comm_dom(int cdi)
 
   INIT_CD_BUSY(cd);
   cd->firmly_bound = false;
+  cd->is_polling_thread = false;
 
   //
   // Create communication domain.
@@ -2873,6 +2875,7 @@ void set_up_for_polling(void)
   //
   acquire_comm_dom();
   cd->firmly_bound = true;
+  cd->is_polling_thread = true;
 
   //
   // Make the fork request and acknowledgement space, and communicate
@@ -4468,7 +4471,7 @@ void send_polling_response(void* src_addr, c_nodeid_t locale, void* tgt_addr,
   // This gets nearly all the benefit of not waiting for completions,
   // while avoiding concurrency control entirely.
   //
-  if (cd == NULL || !cd->firmly_bound) {
+  if (cd == NULL || !cd->is_polling_thread) {
     do_remote_put(src_addr, locale, tgt_addr, size, mr, may_proxy_false);
     return;
   }
@@ -8282,6 +8285,7 @@ chpl_bool can_task_yield(void) {
 static
 void local_yield(void)
 {
+  // TODO 
   //
   // Our task cannot make progress.  Yield, to allow some other task to
   // free up whatever resource we need.
@@ -8304,7 +8308,7 @@ void local_yield(void)
     // (because our comm domain pointer is in TLS), so just yield the
     // CPU.  This should only happen when we are the polling thread.
     //
-    assert (cd->firmly_bound);
+    //assert (cd->firmly_bound);
     sched_yield();
   }
 #else
