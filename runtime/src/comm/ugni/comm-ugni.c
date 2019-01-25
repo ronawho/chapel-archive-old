@@ -2248,7 +2248,7 @@ static void compute_comm_dom_cnt(void)
       comm_dom_cnt = 16;
   }
 
-  comm_dom_cnt++;  // count the polling task's dedicated comm domain
+  comm_dom_cnt+=2;  // count the polling task's dedicated comm domain
 
   //
   // Limit us to 30 communication domains on Gemini (architectural
@@ -7961,6 +7961,10 @@ void acquire_comm_dom(void)
   cd = want_cd;
   cd_idx = want_cdi;
 
+  if (polling_task_running && chpl_task_isFixedThread()) {
+    cd->firmly_bound = true;
+  }
+
 #ifdef DEBUG_STATS
   cd->acqs++;
   cd->acqs_looks += acq_looks;
@@ -7971,80 +7975,25 @@ void acquire_comm_dom(void)
 static
 void acquire_comm_dom_and_req_buf(c_nodeid_t remote_locale, int* p_rbi)
 {
-  int want_cdi;
-  int want_cdi_start;
-  comm_dom_t* want_cd;
   int rbi;
-
-#ifdef DEBUG_STATS
-  uint64_t acq_looks = 0;
-#endif
-
-  if (comm_dom_free_idx == -1) {
-    comm_dom_free_idx = atomic_fetch_add_int_least32_t(&global_init_cdi, 1) % comm_dom_cnt;
-  }
-
-  assert(cd == NULL);
-
-  //
-  // Find an available CD with at least one free CQ entry and fork
-  // request buffer.  Each time we go through all of the CDs without
-  // acquiring one, yield before trying again.
-  //
-  PERFSTATS_INC(acq_cd_rb_cnt);
-
-  want_cdi = want_cdi_start = comm_dom_free_idx;
-  want_cd = &comm_doms[want_cdi];
+  if (cd == NULL)
+    acquire_comm_dom();
 
   do {
-#ifdef DEBUG_STATS
-    acq_looks++;
-#endif
-
-    if (!CHECK_CD_BUSY(want_cd) && ACQUIRE_CD_MAYBE(want_cd)) {
-      if (CQ_CNT_LOAD(want_cd) < want_cd->cq_cnt_max) {
-        for (rbi = 0; rbi < FORK_REQ_BUFS_PER_CD; rbi++) {
-          if (*SEND_SIDE_FORK_REQ_FREE_ADDR(remote_locale, want_cdi, rbi)) {
-            goto found_CD;
-          } else {
-            PERFSTATS_INC(acq_cd_rb_frf_cnt);
-          }
-        }
-        RELEASE_CD(want_cd);
-      } else {
-        RELEASE_CD(want_cd);
-        PERFSTATS_INC(acq_cd_rb_cq_cnt);
+    for (rbi = 0; rbi < FORK_REQ_BUFS_PER_CD; rbi++) {
+      if (*SEND_SIDE_FORK_REQ_FREE_ADDR(remote_locale, cd_idx, rbi)) {
+        goto found_CD;
       }
-    } else {
-      PERFSTATS_INC(acq_cd_rb_na_cnt);
     }
-
-    want_cdi++;
-    want_cd++;
-    if (want_cdi >= comm_dom_cnt) {
-      want_cdi = 0;
-      want_cd = comm_doms;
-    }
-
-    if (want_cdi == want_cdi_start) {
-      PERFSTATS_INC(lyield_in_acq_cd_rb_cnt);
-      local_yield();
-    }
+    local_yield();
   } while (1);
 
  found_CD:
 
-  *SEND_SIDE_FORK_REQ_FREE_ADDR(remote_locale, want_cdi, rbi) = false;
-
-  cd = want_cd;
-  cd_idx = want_cdi;
+  *SEND_SIDE_FORK_REQ_FREE_ADDR(remote_locale, cd_idx, rbi) = false;
 
   *p_rbi = rbi;
 
-#ifdef DEBUG_STATS
-  cd->acqs_with_rb++;
-  cd->acqs_with_rb_looks += acq_looks;
-#endif
 }
 
 
@@ -8292,7 +8241,7 @@ void local_yield(void)
   //
 #ifdef CHPL_COMM_YIELD_TASK_WHILE_POLLING
   PERFSTATS_INC(lyield_cnt);
-  if (cd == NULL) {
+  if (cd == NULL || !cd->is_polling_thread) {
     //
     // Without a comm domain, just yield.
     //
