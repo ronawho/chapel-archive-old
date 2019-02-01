@@ -696,16 +696,11 @@ mpool_idx_base_t mpool_idx_finc(mpool_idx_t* pvar) {
 #define CD_ACTIVE_TRANS_MAX 128     // Max transactions in flight, per cd
 
 typedef uint32_t cq_cnt_t;
-typedef atomic_uint_least32_t cq_cnt_atomic_t;
 
-#define CQ_CNT_INIT(cd, val) \
-        atomic_init_uint_least32_t(&(cd)->cq_cnt_curr, val)
-#define CQ_CNT_LOAD(cd)       \
-        atomic_load_uint_least32_t(&(cd)->cq_cnt_curr)
-#define CQ_CNT_INC(cd)        \
-        (void) atomic_fetch_add_uint_least32_t(&(cd)->cq_cnt_curr, 1)
-#define CQ_CNT_DEC(cd)        \
-        (void) atomic_fetch_sub_uint_least32_t(&(cd)->cq_cnt_curr, 1)
+#define CQ_CNT_INIT(cd, val) cd->cq_cnt_curr = val
+#define CQ_CNT_LOAD(cd)      cd->cq_cnt_curr
+#define CQ_CNT_INC(cd)       cd->cq_cnt_curr++
+#define CQ_CNT_DEC(cd)       cd->cq_cnt_curr--
 
 // We create an array of comm domains and try to spread our threads to
 // different indices. For tasking layers with a fixed number of threads
@@ -726,7 +721,7 @@ typedef atomic_uint_least32_t cq_cnt_atomic_t;
 
 typedef struct {
   atomic_bool        busy CACHE_LINE_ALIGN;
-  cq_cnt_atomic_t    cq_cnt_curr CACHE_LINE_ALIGN;
+  cq_cnt_t           cq_cnt_curr CACHE_LINE_ALIGN;
   chpl_bool          firmly_bound;
   gni_nic_handle_t   nih;
   gni_ep_handle_t*   remote_eps;
