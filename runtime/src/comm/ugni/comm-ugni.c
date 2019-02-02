@@ -4544,7 +4544,9 @@ void send_polling_response(void* src_addr, c_nodeid_t locale, void* tgt_addr,
   //
   PERFSTATS_INC(put_cnt);
   PERFSTATS_ADD(put_byte_cnt, size);
-  (void) post_fma(locale, post_desc);
+
+  PERFSTATS_ADD_POST(post_desc);
+  GNI_CHECK(GNI_PostFma(cd->remote_eps[locale], post_desc));
 }
 
 
