@@ -1516,6 +1516,7 @@ static void      amo_res_init(void);
 static fork_amo_data_t* amo_res_alloc(void);
 static void      amo_res_free(fork_amo_data_t*);
 static void      consume_all_outstanding_cq_events(int);
+static void      consume_all_outstanding_cq_events_poller(void);
 static void      do_remote_put(void*, c_nodeid_t, void*, size_t,
                                mem_region_t*, drpg_may_proxy_t);
 static void      do_remote_put_V(int, void**, c_nodeid_t*, void**, size_t*,
@@ -2855,7 +2856,7 @@ void polling_task(void* ignore)
     //
     // Process CQ events due to our request responses completing.
     //
-    consume_all_outstanding_cq_events(cd_idx);
+    consume_all_outstanding_cq_events_poller();
   }
 
   polling_task_done = true;
@@ -4505,7 +4506,7 @@ void send_polling_response(void* src_addr, c_nodeid_t locale, void* tgt_addr,
     while (polling_post_descs[ppdi].post_id != 0) {
       if ((ppdi = PPDI_NEXT(ppdi)) == last_ppdi) {
         local_yield();
-        consume_all_outstanding_cq_events(cd_idx);
+        consume_all_outstanding_cq_events_poller();
       }
     }
 
@@ -5049,6 +5050,20 @@ void amo_res_free(fork_amo_data_t* amo_res_p)
   atomic_store_bool(&amo_res_pool_lock[i], false);
 }
 
+static
+inline
+void consume_all_outstanding_cq_events_poller(void)
+{
+  gni_cq_entry_t         ev;
+  gni_post_descriptor_t* post_desc;
+  gni_return_t           gni_rc;
+
+  while ((gni_rc = GNI_CqGetEvent(cd->cqh, &ev)) == GNI_RC_SUCCESS) {
+    GNI_CHECK(GNI_GetCompleted(cd->cqh, ev, &post_desc));
+    post_desc->post_id = 0;  // mark as free
+  }
+  assert(gni_rc == GNI_RC_NOT_DONE);
+}
 
 static
 inline
@@ -5061,21 +5076,7 @@ void consume_all_outstanding_cq_events(int cdi)
 
     while ((gni_rc = GNI_CqGetEvent(cd->cqh, &ev)) == GNI_RC_SUCCESS) {
       GNI_CHECK(GNI_GetCompleted(cd->cqh, ev, &post_desc));
-
-      if (post_desc->post_id == 1) {
-        //
-        // This Post descriptor is from the polling task's dedicated
-        // pool for responses.  Just mark it free.
-        //
-        post_desc->post_id = 0;  // mark as free
-      } else {
-        //
-        // This event is for completion of a regular transaction and the
-        // post_id is the pointer to the "done" flag the initiating task
-        // is waiting on.
-        //
-        atomic_store_bool((atomic_bool*) (intptr_t) post_desc->post_id, true);
-      }
+      atomic_store_bool((atomic_bool*) (intptr_t) post_desc->post_id, true);
       CQ_CNT_DEC(cd);
     }
 
