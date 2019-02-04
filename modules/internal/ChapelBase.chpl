@@ -1052,7 +1052,10 @@ module ChapelBase {
     chpl_taskListExecute(e.taskList);
 
     // Wait for all tasks to finish
-    e.i.waitFor(0, memory_order_acquire);
+    while e.i.read() != 0 {
+      chpl_task_yield();
+      local do while e.i.peek() != 0 do chpl_task_yield();
+    }
 
     if countRunningTasks {
       here.runningTaskCntSub(numTasks:int-1);
