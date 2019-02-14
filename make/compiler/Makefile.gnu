@@ -25,7 +25,9 @@
 CXX = $(CROSS_COMPILER_PREFIX)g++
 CC = $(CROSS_COMPILER_PREFIX)gcc
 
-RANLIB = ranlib
+RANLIB = /opt/gcc/8.2.0/snos/bin/gcc-ranlib
+AR = /opt/gcc/8.2.0/snos/bin/gcc-ar
+NM = /opt/gcc/8.2.0/snos/bin/gcc-nm
 
 
 #
@@ -34,7 +36,7 @@ RANLIB = ranlib
 
 DEBUG_CFLAGS = -g
 DEPEND_CFLAGS = -MMD -MP
-OPT_CFLAGS = -O3
+OPT_CFLAGS = -O3 -flto
 PROFILE_CFLAGS = -pg
 PROFILE_LFLAGS = -pg
 

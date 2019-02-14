@@ -26,7 +26,9 @@
 CC = cc
 CXX = CC
 
-RANLIB = ranlib
+RANLIB = /opt/gcc/8.2.0/snos/bin/gcc-ranlib
+AR = /opt/gcc/8.2.0/snos/bin/gcc-ar
+NM = /opt/gcc/8.2.0/snos/bin/gcc-nm
 
 
 #
@@ -34,7 +36,9 @@ RANLIB = ranlib
 #
 
 DEBUG_CFLAGS = -g
-OPT_CFLAGS = -O3
+OPT_CFLAGS = -O3 -flto
+
+CHPL_MAKE_BASE_LFLAGS += -flto
 
 COMP_CXXFLAGS = $(CPPFLAGS) $(CXXFLAGS) $(CRAYPE_COMP_CXXFLAGS)
 RUNTIME_CFLAGS += $(CPPFLAGS) $(CFLAGS)
