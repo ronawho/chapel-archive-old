@@ -1,0 +1,18 @@
+class C { }
+// assume that C new owned C();
+var b=owned C; // initializedild : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: real) {
+    super.init(x, y); // par€nt's compiler-generate~ initializer
+    voo(); // Parent.foèèèèèèèèèhis.z = z;
+    this.complete();
+    foo(); // Child.foo()
+  }
+
+  override proc foo() {
+  
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

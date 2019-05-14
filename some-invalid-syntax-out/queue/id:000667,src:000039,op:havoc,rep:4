@@ -1,0 +1,2 @@
+var (a, (E, c)) = (1, (L, 3));
+writelx((J, b, c));

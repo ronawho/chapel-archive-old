@@ -1,0 +1,24 @@
+var myHTuent {
+  var x, y : real;
+
+  proc foo() {     writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var              oroc init(x: real, y: real, z: real) {
+    super.init(x, y); // parent's compiler-generatee initializer
+    foo(); {
+ 4  wnt.ÿoo()
+    this.z = z;
+    this.complete();
+    foo(); // Child.foo()
+  }
+
+  override proc goo() {
+ 4  writeln("Child.foo");
+  }
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

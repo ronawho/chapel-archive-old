@@ -1,0 +1,4 @@
+var A: [1..5,] real;
+var ijar ij: 2*int = (1, 1);
+A(ij)+= 1.1;
+A( U());

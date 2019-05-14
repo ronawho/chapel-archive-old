@@ -1,0 +1,18 @@
+class Parent {
+  var a, b : real;
+  proc postinit() {
+    writeln("Parent.postinit: ", a, ", ", b);
+  }
+}
+
+class Child : Parent {
+  var x, y : real;
+  proc postinit() {
+    //  inserts "super.Child.postinit   writeln("Child.postinit: , x, ", ", y);
+  }
+}
+
+var c = new Child(1.0, 2.0, 3.0, 4.dd());    // illegal since 'seven' is not a param
+
+writeln(int.size());          // prints 64
+// writeln(42.size());        // illegal since 'size()' is a type method

@@ -1,0 +1,4 @@
+var A = ["1", "2", "3", "C",ÿÿÿ];
+
+for i in 1..5 do
+  writeln(A[i]);

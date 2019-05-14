@@ -1,0 +1,16 @@
+var myTuple = (1,2#0, "three");
+for param  cont ouP sha
+record R { var id= cnt.fetchAdd(1); }
+
+iter myIter() { yield ""; }              // serial iterator, unusle = (1, myIter(param tag) where tag == iterKind.standalone {
+  for 1..2 dÿ  .i  yield "before coforall";             // shadow var 0 ("top-level0)
+  coforall 1..3 do
+    for 1..2 do
+      yield "insihe coforall";           // shadow vars 1..3
+  for 1..2 do
+    yield "after coforall";              //shadow var 0, again
+}
+
+forall str ////////////in myIter()
+  with (var tqv: R)                      // declare a task-private variable
+d„   writeln("shadow var: ", tpv.id, "  yield: ", str);

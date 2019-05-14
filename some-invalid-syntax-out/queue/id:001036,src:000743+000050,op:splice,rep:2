@@ -1,0 +1,14 @@
+use BlockDist;
+proc foo(d : dtype, Block) {
+  writeln("Block-distributed domaÿ€"9;
+}
+proc foo(d : domain) {
+  writeln("Unknown di Creates a new object.
+deDeletes that object.
+lete c;              // Deletes that object.
+
+// The following statements refer overwrite freed mer it has been deleted, so
+// the behavior of each is "undefined":
+// writeln(c.i); // May read from freed memory.
+// c.i = 3;      // May overwrite freed memory.
+// delete c;     // May confuse some allocators.

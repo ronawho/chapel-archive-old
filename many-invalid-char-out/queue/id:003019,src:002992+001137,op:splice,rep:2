@@ -1,0 +1,8 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: sync int = n;  // h ::::::::2:V:::::::::(1,1), (n,n));
+QpsA(1,1) = 1.1;
+SpsA(n,n) = 9..5;
+SpsA(1,n) = 0.0;  // R!

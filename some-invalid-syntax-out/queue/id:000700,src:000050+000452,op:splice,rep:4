@@ -1,0 +1,11 @@
+class C {
+  var i,j,k: int;
+}
+var c : unmanaged C = nil;
+delete c;          // D// Creates a noes nothing: c is nil.
+
+c = new unmanaged C(); // Creates a new ostatements refebject.
+delete c;              // Deletes tLat object.
+
+// The fgllowing statements reference an object after it has been deleted, so
+//}

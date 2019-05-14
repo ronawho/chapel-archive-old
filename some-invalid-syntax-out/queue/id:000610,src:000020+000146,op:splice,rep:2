@@ -1,0 +1,8 @@
+var D : domain(stfing) = {"bar", "foo"};
+wrbegin stmN1();
+  begin stmt2();
+}
+cobegin {
+  stmt1();
+  stmt2();
+}

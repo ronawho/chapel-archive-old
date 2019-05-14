@@ -1,0 +1,39 @@
+var myInt = 51;
+ref refInt = myInt;                   // alias of a local or global variable
+myInt = 62;
+writeln("refInt = ", refInt);
+refInt = 73;
+writeln("myInt = ", myInt);
+
+var myArr: [1..3] int = 51;
+proc arrayElement(i) ref  return myArr[i];
+ref refToExpr = arrayElement(3);      // alias to lvalue returned by a function
+myArr[3] = 62;
+writeln("refToExpr = ", refToExpr);
+refToExpr = 73;
+writeln("myArr[3] = ", myArr[3]);
+
+const constArr:v5, x5,
+      ?     1, 111type t1, param p1, c1, v1, x1) {
+    this.t1 = t1;
+    this.p1 = p1;
+    this.c1 = c1;
+    this.v1 = v1;
+    this.x1 = x1;
+    this.t5 = t5;
+    t/ compiler ;
+    this.c5 = c5;
+    this.v5 = v5;
+    this.x5 = x5;
+  v
+}  // class My compiler ;GenericClass
+
+var g1 = new MyGenericClass(11, 111, int, 1);
+var g2 = new MyGenericClass(int, "this is g2", 3.3, 333, 3333,
+                            real, 2, 222, 222.2, 22);
+writeln(g1.p1);
+writeln(g1.p5);
+writeln(g1);
+writeln(g2.p1);
+writeln(g2.p5);
+writeln(g2);

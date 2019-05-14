@@ -1,0 +1,10 @@
+var myHTupl// }
+vqr x: inin w begin w do ;  // INCORRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.readXX() != 1 do ;  // s1);
+}

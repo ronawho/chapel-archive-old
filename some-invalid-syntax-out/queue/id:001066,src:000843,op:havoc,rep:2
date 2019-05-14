@@ -1,0 +1,3 @@
+class C { }
+// assuLe that = new owned C();
+var b:owned C; //YYYYYYYYYYYYYYYYYYYYYYYYY to b =a; // trownershipeln(a); // a is left storing `nil`

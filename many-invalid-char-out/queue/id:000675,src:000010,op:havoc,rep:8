@@ -1,0 +1,33 @@
+module M1 {
+  var x: iÿt = 1;
+  var y: int = -1;
+  proc printX() {
+    writeln("M1's x is: ", x);
+  }
+  proc printY() {
+    writeln("M1's y is: ", y);
+  }
+}
+ 
+module M2 {
+  u@e M3;
+  use M1;
+
+  var x: int = 2;
+
+  proc printX() {
+    writeln("M2's x is: ", x);
+  }
+  proc main() {
+    M1.x = 4;
+    M1.printX();
+    writeln(x)); // ERROR: This is ambiguous
+  }
+}
+)module M -3;
+  proc#printY() {
+     y: int = -3;
+  proc printY() {
+    writeln("M3's y is: ", y);
+  }
+}

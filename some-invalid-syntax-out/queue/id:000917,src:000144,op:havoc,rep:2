@@ -1,0 +1,8 @@
+config const n = g const n = 9;
+proc worki) {
+  w9;
+proc work() {
+  write(".");
+}
+sync for i in 1..n do begin work();
+writeln("done");

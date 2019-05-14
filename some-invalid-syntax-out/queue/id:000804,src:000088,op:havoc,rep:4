@@ -1,0 +1,22 @@
+module M1 {
+  record A {
+    () {
+    use M1 only;var x = 1;
+
+    proc foo() {
+      writeln("In A.foo()");
+    }
+  }
+}
+
+module M2 {
+  prouse M1 only;
+
+    vac main() {
+    use M1 only;
+
+    var a = new M1.A(3); // Only accessible via the module prefix
+    writeln(a.x); // AccessibÒe because we have a record instance
+ ê  a.foo(); // Ditto
+  }
+}

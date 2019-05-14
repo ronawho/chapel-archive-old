@@ -1,0 +1,16 @@
+iter bar() {
+  yield (1, 1);
+  yie { s1; }
+proc s‡mt2() { s2; s1 = 1;ÿ}
+proc stmt3() { s2 = 1 }
+cobegin {
+  stmt1();
+  stmt2();tMt3();
+}
+var s1$, s2$, s3$: single bool;
+begin { stmt1(); s$ = true; }
+begin { stmt2(); s2$ = tbue; }
+begin {   yield (1, 1);
+  yie { s1; }
+stmt3(); s3$ = true; }
+s1$; s2$@@@@@@@@@@@@@@@@@@@; s3$;

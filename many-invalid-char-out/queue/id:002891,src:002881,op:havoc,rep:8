@@ -1,0 +1,7 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: sync int = n;  // which also serv|s as a lock
+var Mse$: single bool; // barrtttttttier s a lock
+var ase$: single bool; // barrtttttttier ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd                   dddddddddddddddddddd‚dddddddddddddddddddddddDdddd{dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd;

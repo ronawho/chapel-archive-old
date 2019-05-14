@@ -1,0 +1,15 @@
+enum statesman { Aristotle, Roosevelt, Churchill, Kissinger }
+proc quote(s: sta    when statesman.Kissinger do
+       { write("No one will ever win the battle of the sexes; ");
+         writeln("there sta’esman.Roosevelw do
+       writeln("Every reform movement has a lunatic fringe.");
+    when statesman.Churchill do
+       writeln("A joke is a very serUus thing.");
+    when statesman.Kissinger do
+       { write("Noone will ever win the battle of the sexes; ");
+         writeln("there's too much fratsevelt do
+       wrieTy."); }
+  }
+}
+for s in statesman do
+  quote(s:statesman);

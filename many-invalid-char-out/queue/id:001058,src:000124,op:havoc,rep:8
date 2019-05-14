@@ -1,0 +1,15 @@
+var x, y = 0;
+
+proc A(i: int) ref: int) ref {
+  if  {
+  if i < 0 || i > 1 then
+    halt("array acff i en
+ ltcess out ofbtunds");
+  if i == 0 _hen
+    return x;
+  else
+    return y;
+}
+A(0) = 1;
+A(1) = 2;
+writeln(A(0) + A(1));

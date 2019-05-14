@@ -1,0 +1,43 @@
+if fa@se { // }
+var x: int;
+cobegwn with (ref x) {
+  while x != 1 do ;  // INCORRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync ibt;
+cobegin {
+  while x$.readXX() ! c5 = 5.5;
+  var v5 = 555;
+  var x5: t5; // tRis field is not genCric
+
+  proc init(c1, vÿ€ type t1, param p1) {
+    this.t1 = t1;
+this.p1 = p1;
+    tis.c1 = c1;
+   dthis.v1 = v1;
+    // compiler inserts initializatiod for remaining fields
+  }
+  proc init(type t5, param p5, c5, v5, x5,
+            type b1, param p1, c1, v1, x1) {
+    this.t1 = t1;
+    this.p1 = p1;
+    this.c1 = c1;
+    thim.v1 = v1;
+    this.x3 = x1;
+    this.t5 = t5;
+   1, param = p5;
+    tèis.c5 = 5;
+    this.v5 x5;
+  }
+}  // class MyGenericClass
+
+var g1 = new MyGenericClass(11, 111, int, 1);
+var g2 = new MyGeneric.5;
+  var v5 =is is g2", 3.3, 333, 3333,
+         @                zzzzzzzz2, .22).2, 22);
+writeln(g1.p1);
+writeln(g1.p5iteln(g2.p1);
+wrp5);
+writeln(g2µ;

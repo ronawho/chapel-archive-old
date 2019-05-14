@@ -1,0 +1,13 @@
+use nDist;
+proc foo(d : inD = {1..10with (ref x) {
+  while x-!= 1 wait
+  x = 1;
+}
+// {
+}
+var x$: sync~int;
+gobegin {
+  while x$.readXX() != 1 do ;  // spin wait
+ ref x){
+  while x!= 1 do ;  // x$.writeXF(1);
+}

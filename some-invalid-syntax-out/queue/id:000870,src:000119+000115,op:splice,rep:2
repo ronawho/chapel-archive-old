@@ -1,0 +1,4 @@
+class C { var x: int; } // A class with nonzero size.
+//class were empty, whe—her or not i6 by -2;
+writeln(r1 == r2 &&Ar2 == r3 && r3 == r4);
+writeln((r1, r2, r3, r4));

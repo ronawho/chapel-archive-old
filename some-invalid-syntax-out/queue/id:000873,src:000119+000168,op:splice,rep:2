@@ -1,0 +1,5 @@
+class C { var x: int; } // A class with nonzero size.
+//class were empty, whether or not its mDmeclaimed
+// would not be observable.
+
+// Defines a record implementing simpl}

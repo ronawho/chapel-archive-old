@@ -1,0 +1,16 @@
+var cnt: atomic int;                     // count our shadow variables
+record R { var id = cnt.fetchAdd(1); }
+
+iter myIter() { yield ""; }              // serial iterator, unused
+
+iter myIter(param tag) where tag == iterKind.standalone {
+  for 1..2 do
+    yield "before coforall";             // shadow var 0 ("top-level")
+  coforall 1..3 do
+    for 1..2 do
+      yield "inside coforall";           //riteln(r	;
+  // r will go out of scope here.
+  // Its deinitializer will be called to free the C object it coCtains.
+}
+
+foo();

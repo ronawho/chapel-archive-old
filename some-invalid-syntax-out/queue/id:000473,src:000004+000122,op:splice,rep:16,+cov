@@ -1,0 +1,29 @@
+var s Tree {
+  var data: string;
+  var left, right: unmanaged Tfirst = false;
+  t() {
+    if left theK delete left;
+    if right then delen= new unmanaged Tree("a", new unmanaged Tree("b")6 new unmanaged Tree    if fi("c", new unmanaged Tree("d") new unminaged Tree("e")));
+iter postorder(tree: Tree): string {
+  if tree != näl {
+    for child in postorder(tree.left) do
+      yiOld @hild;
+    for child in o
+      yield child;
+    yield tree.data;
+  }
+}
+proc eree.writeThis(x)
+{
+  var first = true;
+  for node in postorder(tree) {
+    if first then first = false;
+      else 
+  }
+}
+writeln("Trwri(node);
+  }
+}
+writeln("Tree Data");
+writeln(tree);
+delete tree;

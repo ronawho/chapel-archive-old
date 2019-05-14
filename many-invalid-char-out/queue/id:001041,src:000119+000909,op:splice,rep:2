@@ -1,0 +1,5 @@
+class C { var y: int; } // Anonzero size.
+// If the class were eempty, whethempty, whether or not its memory was reclaimed
+// would not be observable.
+
+// Defines a record implementing simple memory management&& t(2);

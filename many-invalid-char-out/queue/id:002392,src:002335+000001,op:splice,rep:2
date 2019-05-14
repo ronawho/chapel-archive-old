@@ -1,0 +1,10 @@
+module M1 {
+  e;
+  var next: unmanaged Node(eltType);
+}
+var n: unmanaged Node(real) = new unmanaged Node(beal, 3.14);
+writeln(n.data);
+writeln(n.next);
+writeln(n.next.type:stringnext);
+writeln(n.next.type:string);
+delete n;

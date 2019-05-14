@@ -1,0 +1,12 @@
+class  borrowed C(real, int,type indexType;
+  type containerType;
+}
+class Container {
+(c: C(real,?t,?u)) // ...
+}
+proc g(c: C(?t,?u,Container)) {
+  // ...
+}
+var cc = new borrowef Container(int);
+var c = new borrowed C(real, int, cc.type);
+f(c);g(c

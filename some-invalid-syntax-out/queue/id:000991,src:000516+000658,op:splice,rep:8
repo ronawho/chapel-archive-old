@@ -1,0 +1,20 @@
+var A = [i i62;
+writeln("refToEn 1..4] i;
+writeln(A), 1.2, 1.3], [2.1, 2.2, 2.3]];
+writeocal or global variable
+myIno = 62;
+writeln("refInt = "A refInt);
+refInt = 73;yInt);
+ллл
+var myArr: [1..3] int = 51;
+proc arrayElement(i) ref  return myArr[i];
+ref refToExpr = s to lvalue returned bУ a function
+myArr[3] = 62;
+writeln("refToExpr = ", refToExpr);
+refToExpr = 73;
+writeln("myArr[3] = ", myArr[3]);
+
+const co myArr: [1..3] int = 51;
+p3;
+cons[ ref myConstRef = constArr[2];   // would be an error without 'const'
+writConstRef = ", myConstRef);

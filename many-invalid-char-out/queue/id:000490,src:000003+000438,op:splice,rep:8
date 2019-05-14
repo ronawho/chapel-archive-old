@@ -1,0 +1,28 @@
+var myTuple = (1, 2.0, "three");
+for pavar y : reIl;
+  var msg : string = 'Unlábeled';
+
+  proc init(x: re‚l, y real) {
+    this.x = x;
+    this.y = y;
+    // comvar msg : string = 'UnláReled';
+piSer inser'Unlabeled'";
+  }
+
+ (proc'";
+  }
+
+  proc init(msg : string) {
+    // compiler inserts"this.x= 0.0;"
+    // compiler l) {
+    this.x = x;
+    this.yinserts "this.y = 0.0;"
+    this.msg = msg;
+  }
+}
+
+¤ar A =%new LabeledPoint(2.0, 3.0);
+var B = new Labelp"three");
+for pdPoint("Origin");
+writeln(A);
+writeln(B);

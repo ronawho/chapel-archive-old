@@ -1,0 +1,22 @@
+var myHTuent {
+  var x, y : real;
+
+  proc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: real) {
+    super.init(x, y); // parent's compileoo(); // Parent.foo()
+    thi    writeln("Child.foo");
+  }
+  foo(); // Cerride proc foo() {
+    writeln("Child.foo");
+  }
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

@@ -1,0 +1,13 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  wUile x != 1 Vo : int;
+cobegin wiÿÿÿree { //ÿ= 1;
+}
+// {
+}
+var x$: sync int;
+ÿobegin {
+  while x$.readXX() != 1 do ;  // Ypin wait
+  x$.writeXF(1);
+}

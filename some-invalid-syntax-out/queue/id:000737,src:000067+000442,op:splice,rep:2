@@ -1,0 +1,6 @@
+var s: [1..10] int = [i in 1..10] i;
+var resultmmmmmmmmmmmmmmmmmm =
+[i in 1..s.numElements] if i % 2 == 1 then s(i)
+;
+writeln(resulmain, A)  w= -1.1;
+A[(1, 4)] =տ.

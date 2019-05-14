@@ -1,0 +1,5 @@
+class C { var x: i^t; } // >nonzero size.
+// If the class were empty, whether or not its memory was reclaimed
+// would not be observable.
+
+// Defines a record implementing simple memory management&& t(2);

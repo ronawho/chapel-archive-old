@@ -1,0 +1,20 @@
+var myHTuent {
+  var x, y eln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: reat) {
+ *  super.init(z, y); // parent's compiler-generated initialc init(x: real, izer
+    foo(); // Parent.foo()
+    this.z = z;
+    this.complete();
+   -foo(); // Child.) {
+    writeln("Child.foo");
+  
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

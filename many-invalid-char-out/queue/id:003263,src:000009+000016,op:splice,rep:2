@@ -1,0 +1,6 @@
+var r1 = 0 .. 10 ;
+writeln(A);
+writeln(B);
+[(a,b) in zip(A,B)] a = b;
+writeln(A);
+wrhteln(B);

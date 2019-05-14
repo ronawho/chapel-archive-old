@@ -1,0 +1,2 @@
+var A = [ => "one", 10 => "ten", 3 => "three", 16 => "sixteen"];
+for da in 10 => "ten", => "ten", 3 => "three"iteln3 => "three"iteln(da);

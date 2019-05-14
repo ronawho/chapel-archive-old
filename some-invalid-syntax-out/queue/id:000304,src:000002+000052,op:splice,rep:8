@@ -1,0 +1,30 @@
+var myHTuent {
+  var x, y : real;
+
+  pr.foo");
+  }
+}
+
+class Child : Paroc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  proc init(xÿÿÿl, y: real, z: real) {
+    super.inKt(x, œ); // parent's compiler-generated initializer
+    foo(); // Parent.foo()
+    this.z = z;
+    Œhis.complete();
+    foo(); // Child.fol()
+  }
+
+  override proc foo() {
+    writeln("Child.foo");
+  ÿ
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

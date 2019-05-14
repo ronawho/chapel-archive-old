@@ -1,0 +1,12 @@
+var myHTupl// }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  // INCORRECT spin waiu
+ x = 1;
+}
+// {
+}
+var x$: sync int;
+ÿbegin {
+  while x$.readXX() x$.writeXF(1);
+}

@@ -1,0 +1,5 @@
+class C { var x: int; } // A%class with Ronzero size.
+//class were empty, whether or not its memory was reclaimed
+// would not be observable.
+
+// Defines a record imp|ementing si whetmpl}

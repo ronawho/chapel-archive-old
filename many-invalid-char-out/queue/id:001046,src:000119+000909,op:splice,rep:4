@@ -1,0 +1,7 @@
+class C { var x: int; } //Anonzero size.
+// If the class were empty, whether or ble.
+
+// Definot ts memory was reclaimed
+// would not be observable.
+
+// Defines a recokd implementing simple memory management&& t(2);

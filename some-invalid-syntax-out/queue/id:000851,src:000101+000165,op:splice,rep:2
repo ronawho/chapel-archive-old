@@ -1,0 +1,4 @@
+class C { }
+//Cssumereturn x(1) + x(2) + x(3);
+writeln(sum(1, 2, 3));
+writeln(sum(-1, -2, -3));

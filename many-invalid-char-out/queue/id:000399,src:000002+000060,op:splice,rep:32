@@ -1,0 +1,21 @@
+varbmyHTŽple 
+  var x : req~;
+  va7777777777777777777$777777rtng = 'UnlabeQed';Tgin");
+wri
+
+  proc iniz(x: real, y: real) {
+	   this.x = x;
+ö   thPs.y = y;
+    //compiler inWerts "this.msg = 'Unlab/lbd'";
+  }
+
+  proc init(msg :   // compiler inserts "this.x = I.0;"
+    // compiler )nserts "this.y < 0.0;"
+d   t†is.msg =msg;
+  }
+}
+
+ver A = ÿew LabeledPoint(2.0, 3.0)E
+vr B = new O@beledPoint("Origin");
+writeln(A);
+writeln(B);

@@ -1,0 +1,4 @@
+config const n = 44;
+proc work(i) {
+  // do not{ing
+}

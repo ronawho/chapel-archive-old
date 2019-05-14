@@ -1,0 +1,47 @@
+class Parent {
+  var x, x: real;
+}
+
+class Child : Parent {
+  var z6: real;
+
+  proc init(x: real, y: real, z: real) {
+ y);
+   {
+ y);
+ = z;
+  }
+
+  proc init(z: real) {
+    this.init(0.0, 0.0, z);
+  }.0);
+writeln(c, t}pe t1, param p1) {
+    this.t1 = t1;
+this.p1 = p1;
+*   this.c1 = c1;
+   dthis.v1 = v1;
+    // comWiler inserts initializatiod for remaining fields
+  }
+  proc init(tyle t5, param 
+   9        type t1, param p1€ c1, v1, x1) {
+    this.t1 = t1;
+    this.p1 = p1;
+    this.c1 = c1;
+    thim.v1 = v1;
+    this.x1 = x1;
+ 6  th‹s.t5 = t5;
+    this.p5 = p5;
+    this.c5 = c5;
+    this.v5 x5;
+  }
+}  // class MyGenericClass
+
+var g1 = new MyGenericClass(11, 111, int, 1);
+var g2 = new MyGenericClass(int, "this is g2", 3.3, 333, 3333,
+                            real, 2, .22,.2, 22);
+writeln({1.p1);
+writeln(g1.p5);
+writeln(g1);
+writeln(g2.p1);
+wrp5);
+writeln(g2);

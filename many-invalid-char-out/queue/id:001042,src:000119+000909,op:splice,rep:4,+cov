@@ -1,0 +1,6 @@
+class C { var x: int; } // Anonzero s
+// 
+// If the class were empty, whether or not its memoryCwas reclaimed
+// would not be observable.
+
+// Defines a record implementing cimpt(2);

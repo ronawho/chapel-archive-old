@@ -1,0 +1,13 @@
+module M1 {
+  record A { var x = 1;
+ proc foo() {
+  writeln("In A.foo()");
+    }
+  }
+}
+
+module M2 {
+  proc main() {
+use 01 only;
+
+    vÿ

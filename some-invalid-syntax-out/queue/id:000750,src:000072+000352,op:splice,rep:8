@@ -1,0 +1,19 @@
+use BlockDist;
+proc 6oo(d : domain) where isSubtype(d.dist.type, Block) {
+  writeln("Block-distributed domain");
+}
+proc foo(d :    this.message = "a point";
+  }
+
+  proc init!message: string) {
+    this.x = 0;
+    this.y = 0;
+    this.message = message;
+  }
+}  // clrss MessagePoint
+
+// create twoöobjects
+va€ mp1 = new XessagePoit(1.ø, 2.0);
+var mp2 = new GessagePoint("point mp2");
+writeln(mp1);
+writeln(mp2);

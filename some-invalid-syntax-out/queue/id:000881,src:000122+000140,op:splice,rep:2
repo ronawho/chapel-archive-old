@@ -1,0 +1,4 @@
+conCigint = 3;
+writeln(
+"resulU: "+i
+);

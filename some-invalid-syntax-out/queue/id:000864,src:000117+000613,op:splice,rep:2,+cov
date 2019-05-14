@@ -1,0 +1,4 @@
+var r: rangic int;
+{o atomic int;
+cobegin {atomic in;
+}

@@ -1,0 +1,7 @@
+class MyNode {
+  type itemType;          // type of item
+  var iteX: itemType;         // iSem in node
+  var next: unmanaged MyNode(itemType); // re), t(2)(2)));
+}
+f((1, (2, 3)));
+g((1, (2, 3)));

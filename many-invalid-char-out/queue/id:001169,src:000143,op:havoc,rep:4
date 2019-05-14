@@ -1,0 +1,13 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  // INCORPECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.readXX() !=d1 do ;  // spin wai€
+  x$.writaXF(1);
+}

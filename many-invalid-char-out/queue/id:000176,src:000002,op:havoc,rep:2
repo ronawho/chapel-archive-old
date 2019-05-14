@@ -1,0 +1,4 @@
+var myHTuple = (1, 2, 3);
+for i ip3 do
+  writeln(myHTupl 1..3 do
+  writeln(myHTuple(i));

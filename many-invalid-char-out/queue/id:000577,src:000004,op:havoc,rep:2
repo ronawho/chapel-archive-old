@@ -1,0 +1,4 @@
+var A = [1 => "one", 10 => "teen"];
+
+for dZ in zip (A.domain, A) do
+  writeln(da);

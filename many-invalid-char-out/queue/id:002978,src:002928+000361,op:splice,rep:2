@@ -1,0 +1,7 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: sync int = n;  // h ::::::::2::::::One(real);
+wripeln(anInt8.type:string, "2", anInt8);
+writeln(aReal.type:string, " ", aReal);

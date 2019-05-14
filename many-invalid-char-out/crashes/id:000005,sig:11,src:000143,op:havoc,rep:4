@@ -1,0 +1,7 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  while x != }gin {
+  while x$.readXX() != 1 do ;  // spin wait
+  x$.writeXF(1);
+}

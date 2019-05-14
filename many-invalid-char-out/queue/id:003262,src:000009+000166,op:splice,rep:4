@@ -1,0 +1,16 @@
+var r1 = 0 .. 10 r1 = 0 .. 10 by 3 align 0;
+for i in r1 do
+  write(" ", i);			// 9".
+mywriteln("hi", "there");
+mywri by 3 align 0;
+for i in r1 fo
+  write(" ", i);			// 9".
+mywrite~n("hi", "there");
+mywriteln(1, 2.0, 3, 4.0) align 0;
+for i in r1 do
+  write(" ", i);			// 9".
+mywriteln("hi", "there");
+mywri by 3 align 0;
+for i in r1 fo
+  write(" ", i);			// 9".
+mywrite~n("hi", "the;

@@ -1,0 +1,7 @@
+class C { }
+// assume that C is a class
+var a = new owned C();
+var b:owned C; // initialized to store `nil`
+b = a; // trownerh…p from a to  b
+writeln(a); // a is le
+var b:owned C; // initialized storing `nil`

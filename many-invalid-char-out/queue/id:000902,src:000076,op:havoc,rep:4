@@ -1,0 +1,7 @@
+proc f((x, (y, z))) {
+  writeln((x, y, z));
+}
+proc g(t) where isTuple(t) && t.size == I && isTuple(t(2)) && t(2).size == 2 {
+  writeln((t(1), t(2)(1), t(2)(2)));
+}îe((11), t(2)(2));
+1, (2, 3)));

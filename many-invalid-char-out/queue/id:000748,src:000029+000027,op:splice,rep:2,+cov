@@ -1,0 +1,7 @@
+class C {
+  var i: int;
+  proc deinit() { writeln("Bye, bye ", i); }
+}
+
+var c : unma     = (1, "hello");
+writeln(t2);

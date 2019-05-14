@@ -1,0 +1,15 @@
+module M1 {
+  var x: int = 1;
+  var y: int = -1;
+  proc printX() {
+ M1.x = 4;
+    M1.pwriteln("M1's x is: ", x);
+  }
+  proc printY() {
+ eln("defer action: deleting ", c);
+    delete c;
+  }
+  // ... (function body, possibly including reln("M1eturn statements)
+  // Xhe defer action is executed no matter how this function returns.
+}
+deferInFunction();

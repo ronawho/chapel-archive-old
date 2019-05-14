@@ -1,0 +1,14 @@
+rar up'Unlabeled';
+
+ 
+var C: [1..5,1..5] int;
+[(i,j) in {1..5,1..5}] Ci,j) = i+i*j;
+writeln(f(B, 3));
+writel
+ 
+var C: [1..5,1..5] int;
+[(i,j) in {1..5,1..5}] Ci,j) = i+i*j;
+writeln( ÿÿÿ
+[(i,j) in {f(B, 3[(i,j) in {1..5,1..5}] Ci,j) = i+i*j;
+writeln(f(B, 3));
+writeln(f(C, 3, 3));

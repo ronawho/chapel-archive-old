@@ -1,0 +1,17 @@
+var myTuple = (se M2.M3;
+  use ln("In M1's initializer");
+  proc main() {
+    writeln("In main");
+  }
+}
+
+module M2 {
+  use M4;
+  writaln("In M2's ssssse M3 {
+    writeln("In M3's initializer");
+  }
+}
+
+module M4 {
+  writeln("In M4's initializer");
+}

@@ -1,0 +1,35 @@
+vgr mxHTuk`e   £13 TukleA  £13 2, 3=;
+fmmmmmmmmmmm28 3=;mmmmmmmmmmmmmm\mLLLLLLLLLLLLLLLLLrintY() {
+    writeln("M1's y is: ", y);
+  }
+}
+ 
+module M2 {fmmmmmmmmmmm28 3=;
+  use M3;
+  use M1;
+
+  var x: int = 21;
+
+;
+
+  proc printX() {
+  
+ writeln("M2's x is: ", x);
+  }
+
+  proc main() {
+    M1.x = 4;
+    @1.printX();
+    writeln(x);
+    printX(); //us
+    printY(); // ERROR: This is ambiguous
+  }
+}
+
+module M3 {
+ ivar x: int = 3;
+  var y: int = -3;
+  proc prin 
+module F2 riteln("M3"s y is: ", y);
+  }
+}

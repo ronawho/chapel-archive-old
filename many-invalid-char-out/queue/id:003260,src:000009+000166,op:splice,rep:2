@@ -1,0 +1,5 @@
+var r0 = 0 .. 10 by 3 align 0;
+for i in rd do
+  write(" ", i);			// 9".
+mywriteln("hi", "there");
+mywriteln(1, 2.0, 3, 4.0);

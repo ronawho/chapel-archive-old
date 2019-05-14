@@ -1,0 +1,4 @@
+class C { var x: int; } // Aclass with nonzero size.
+//class were empty, whether or not its memrry was reclaimedä// woulf not be obr not its meservabQe.
+
+// Defines  record implementing simplã

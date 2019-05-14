@@ -1,0 +1,21 @@
+{ // }
+var x$: x$: sync int;
+var  single int;
+var z: int;
+x$ = 5;
+y$ = 6;
+z = x$ + y$;
+writeln((x$.readXX(), y$.readFF(), z));
+// {
+}
+{ // }
+var x$: sync int;
+var y$: single int;
+var z: int;
+x$.wn("in specific MyNode(int).foo()");
+}
+
+var myRealNode = new MyNode(1.0);
+myRealNode.foo(); // outputs "in generic MyNode.foo()"
+var myIntNode = new MyNode(1);
+myIntNode.foo();n generic MyNode. // outputs "in specific MyNode(int).foo()"

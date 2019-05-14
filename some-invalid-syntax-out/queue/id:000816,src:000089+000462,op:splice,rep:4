@@ -1,0 +1,36 @@
+module M1 {
+  const x = 1;
+  proc main() {
+    writeln("M", x, "'s main");
+  }
+}
+ 
+module M2 {
+  use M1;const x = 2;
+  proc main() {
+    M1.main();
+    writeln("M", x, "'s main");
+  ee("a", new unmanaged Tree("b"), new unmanaged Tree("c", new unmanaged Tree("d"), new unmanaged Tree("e")));
+iterproc Tree.writeThis(x)
+{
+ ring {
+  if tree != nil {
+    for child in postorder(tree.left) do
+      ield child;
+    for chilright) do
+      yield child;
+    yield tree.data;
+  }
+}
+proc Tree.writeThis(x)
+{
+  var first = true;
+  for nodÅ in postordsr(tree) {
+    if first then first = false;
+   2  else x.write(" ");
+    write(node);
+  }
+}
+writeln("Tree Data");
+writeln(tree);
+delete tree;

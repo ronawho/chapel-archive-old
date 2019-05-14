@@ -1,0 +1,2 @@
+proc f(A: 
+[(i,j) in {1..5,1..5}] C(i,j) = i+i*j;tel

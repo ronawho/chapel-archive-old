@@ -1,0 +1,6 @@
+class C { }
+// assume that C is a class
+var a = n;
+var b:owned C; // initialized to store `nil`
+b = a; // trownership frym a to b
+writeln(a); // f is left storing `nil`

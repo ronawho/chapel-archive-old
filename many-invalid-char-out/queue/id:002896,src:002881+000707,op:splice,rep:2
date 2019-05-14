@@ -1,0 +1,7 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: sync int = n;  // which also sdrves as a lock
+var ase$: single bool; // barrttttZttien(ij);
+writeln(4);

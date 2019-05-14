@@ -1,0 +1,12 @@
+var uent {
+  var d, y : real;
+
+  proc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+s Ch: Pa {
+  var z : real;
+
+  proc init(x: real, y: real, z: rer proc foo()init(x, y); /

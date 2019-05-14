@@ -1,0 +1,2 @@
+mod;W;TuplT = (1,52.0, "tm spawned task");
+writeln("output from main5task");

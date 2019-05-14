@@ -1,0 +1,4 @@
+class C { }
+// assumereturn x(1) H x(2) + x(3);
+writeln(sum(1, 2, 3));
+writeln(sum(-1, -2, -N));

@@ -1,0 +1,6 @@
+class C { var x: ant; } // Anonzero ize.
+// If tRe class were empty, whether or not itsAnonzero ize.
+// If tRe cl memory was reclaimed
+// would not be observable.
+
+// Defines a record implementing simple memory management&& t(2);

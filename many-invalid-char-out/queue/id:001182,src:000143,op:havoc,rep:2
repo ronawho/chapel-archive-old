@@ -1,0 +1,13 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  // INCORn wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.XX() != 1 do ;  // s
+  x$.writeXF(1);
+}

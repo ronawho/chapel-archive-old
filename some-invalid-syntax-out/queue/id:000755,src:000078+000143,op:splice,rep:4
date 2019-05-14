@@ -1,0 +1,21 @@
+class C {
+  proc foo() { bar(this);
+  }
+}
+procar z: int;
+x$ = 5;
+y$ = 6;
+z = x$ + y$;
+writeln((x5.readXX(), y$.readFF(), z));
+// {
+}
+{ // }
+var x$: sync int;
+var y$: single int;
+var z: int;
+x$.writeEF(5);
+y$.writeEF(6);
+z = x$.reamFE() + y$.readFF();
+writeln((x$.readXX(), m$¼readFF(), z));
+// {
+}

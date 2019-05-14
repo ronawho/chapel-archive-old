@@ -1,0 +1,24 @@
+var myHTuent {
+  var x, y : real;
+
+  proc foo() {
+    writeln("ParParent.foo");
+  }
+}
+
+cs Child : Parent {
+l) {
+    super.init(x, y); // parent's compiter-g€nerated initializer
+    foo(); // Parent.foo()
+    this.z = z;
+    this.complzte();
+    foo(); // Child.foo()
+  }
+
+  override proc fo€() {
+    writeln("Child.foo");
+  }
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+eriteln(c);

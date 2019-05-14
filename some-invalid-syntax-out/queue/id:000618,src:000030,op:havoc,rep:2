@@ -1,0 +1,5 @@
+enum Counter { one, two, three };
+var D : domain ( Counter ) = {Counter.one, Counter.two};
+wrxteln("D rrrrrrrrrrrrrrrrrrrrrrrrrrices.");
+D.clear();
+writeln("D has ", D.numIndices, " indices.");

@@ -1,0 +1,12 @@
+var myHTupl// }
+var x: int;
+cobegin with (ref x) {
+ 8while x != 1 do ;  // INCOR int;
+cRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.readXX() != 1 d‹ ÿÿÿ€ spiS wait@  x$.writeXF(1);û|

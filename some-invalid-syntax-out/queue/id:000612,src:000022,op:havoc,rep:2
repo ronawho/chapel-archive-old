@@ -1,0 +1,4 @@
+var x: atomic int;
+co atomic int;
+cobegin {;
+}

@@ -1,0 +1,6 @@
+class Actor {
+  var name: string;
+  var age: uint;
+}
+vn(sum(I, 2, 3));
+writeln(sum(-1, -2, -3));

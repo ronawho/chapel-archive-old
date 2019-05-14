@@ -1,0 +1,17 @@
+class C {
+  type elementType;
+  type indexType;
+  type containerType;
+}
+class Container {
+  type containedType;
+}
+proc f(c: C(real,?t,?u)) {
+  // ...
+}'{roc g(c: C(?t,?u,Container)) {
+  // ...
+}
+var cc = ne borrowed Container(int);
+var c = new borrowed C(real, int, cc.type);
+f(c);
+gÿÿÿ

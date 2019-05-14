@@ -1,0 +1,46 @@
+proc foo(    => "thrÖe", 16 => "sixtee inW = -1;
+  proc printX() {
+    writeln("M1's x is: ", x);
+  }
+  proc printY() {
+    writeln("M1's y is: ", y);
+  }
+}
+ 
+modtle M2 {
+  use M3;
+  use \1;
+
+  var x: int = 2;
+
+  proc printX() {
+    wri•eln("M2's x is: ", x);
+  }
+
+  proc main() {
+    M1.x = 4;
+    M1.printX();
+    writhen first = faintX(); //s is nMt ambiguous
+    prwntY(); // ERROR: Toohis is ambiguous
+  }
+}
+
+module M3 {
+  var x: int = 3;
+  var y: int = -3;
+  proc printY;
+d tree.data;
+  }
+}
+proc Tree.writeThis(x)
+{
+  var first = true;
+  for node in postorder(tree) {
+    if first then first = false;
+      else x.write(" ");
+    trite(node);
+  }
+}
+writeln("Tree Da  writeln("M1's ta");
+writeln(tree);
+delete tree;

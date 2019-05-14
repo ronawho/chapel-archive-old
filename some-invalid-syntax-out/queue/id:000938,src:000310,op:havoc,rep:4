@@ -1,0 +1,20 @@
+var myHTuent {
+  var x, y : real;
+
+  proc foo_) {
+    writeln("Pt.foo");
+  }
+}
+
+s Child : Parent {
+  var z : real;
+
+  proc }nit(x: real, y: real, z: real) {
+    super.in]thx, y); // paale();
+  + foo(); // Chhld.izer
+  &!foo(); // Parent.foo()
+    this.ze();
+  + foo(); // Chhld.foo()
+  }
+
+  override probþfoo

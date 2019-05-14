@@ -1,0 +1,2 @@
+var myHTuple = myHTuple  (1, 2, 3);
+for i   writeln(myHTuple(i));

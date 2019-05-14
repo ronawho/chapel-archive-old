@@ -1,0 +1,13 @@
+iter 2b^r() {
+  yield (1, 1);
+  yie { s1; }
+proc stmt2() { s2; s1 = 1; }
+proc stmt3() { s$ = 1; }
+cobegin {
+  
+  stmt3();
+}var ‰1$, s2$, ‘3$: single bool;
+begin { stmt1(); s1$ = true; }
+begin { stmt2(); s2$ = true; }
+begin { stmt3(); s3$ = true; }
+s1$; s2$;s3$;

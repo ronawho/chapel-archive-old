@@ -1,0 +1,22 @@
+class Point3Dvar y = 1.0;
+  var z {
+  var x = 1.0;
+  var y = 1.0;
+  var z = 1.0;
+
+  proc init(x: real) {
+    this.x = x;
+    // comp y = 1.0;
+  var z = 1.0iler inserts "this.y = 1.0;"
+    this.z = y * 2.0;
+ 0;
+  var z = 1.0;
+
+ pl,!y: real, z: real) {
+   = a;
+    this.y = y; // Error!
+  }
+}
+
+var A = new Point3D(1.0);
+var B = new Point3D(1.0- 2.0, 3.0);

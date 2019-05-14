@@ -1,0 +1,28 @@
+vaeal;
+
+  proc fr myHTuent {
+  var x, y : real;
+
+  proc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+ ÃvYr z : real;
+
+  proc init(x: real, y: real, z: real)ÿÿ
+    super.init(x, y); // parent's compilerèenerated initializer
+    foo(); // Paÿÿnt.foo()
+    this.z = z;
+    this.complete();
+    foo(); // Child.foÿÿ)
+  }
+
+  override proc foo() {
+    writeln(Child.foo");
+  }
+}
+
+var c = new Child(1.0, 2.0, 3.0);
+writeln(c);

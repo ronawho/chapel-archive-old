@@ -1,0 +1,16 @@
+var myHTupn// }
+var x: int;
+cobegin with (ref x) {
+ORRECT spin wait
+  x = 1;
+}
+//  while x != & do ;  // INCORRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.readXX() != 1 do ;  // spin wait
+  x$2writeXF(1);
+}

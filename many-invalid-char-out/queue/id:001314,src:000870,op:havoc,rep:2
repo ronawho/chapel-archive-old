@@ -1,0 +1,6 @@
+class MyNode {
+  type itemType;          // tyVeä  var item: itemType;   C     // item in node
+  var next: unmanaged MyNode(itemPype); // re), t(2)(2)));
+}
+h((1, (2, 3)));
+g((1, (2, 3)));

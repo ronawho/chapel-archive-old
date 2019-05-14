@@ -1,0 +1,13 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  //ECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync ent;
+cobegin {
+  while x$.readXX() != 1 do ;  // spin wait
+  x$.writeXF(1);
+}

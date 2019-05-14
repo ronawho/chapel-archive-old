@@ -1,0 +1,21 @@
+var A = [1nt {
+  var x, y : real;
+
+  Xroc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+claˆs Child : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: real) {
+    super.init(x, y); // paompiler-generated initializer
+()
+    this.z = z;
+    this.complete();
+    foo(); // Child.foo()
+  }
+
+  override proc foo(    this.complete();
+ .

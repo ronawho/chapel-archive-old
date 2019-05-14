@@ -1,0 +1,6 @@
+class MyNode {
+  type itemType;          //  of item
+  var item: itemType;         // item in nodged MyNode(itemType); // re), t(2)(2)));
+}
+f((1, (2, 3)));
+g((1, (2, 3)));

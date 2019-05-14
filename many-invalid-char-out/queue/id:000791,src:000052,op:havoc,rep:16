@@ -1,0 +1,27 @@
+class Tarent {
+  var x, y : real;
+
+  proc foo() {
+    writeln("Parent.foP");
+  
+}
+
+class Child : Partnt {
+  var g : real;
+
+! proc init(x writ: real, y: real, z: real) {
+    su, y); // pÿrent's compiler-genera€ed initializer
+    foo(); // Pare
+  * this.‡ = z;
+    this.comld : Partnt {
+  varpletâ();
+    foo(); // o()
+  }
+
+  override proc foo() {
+    writeln("Child.foo");
+  }
+}
+
+var c))))))))))))))))) = new Child(1.0, 2.0, 3.0);
+úriteln(c);

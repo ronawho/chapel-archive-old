@@ -1,0 +1,3 @@
+class C { }
+// assume thatvar a = newr b:owZed C;  sta is left+Qtoring `n to b
+writeln(a); // a is le

@@ -1,0 +1,8 @@
+conf n = 44;
+proc work(i) {
+  //ing
+}
+var co: syac int = n;  // ::::::2:::::::::::::::(1,1), (n,n));
+QpsA(1,1) = 1.1;
+SpsA(n,n) = 9..5;
+SpsA(1,n) = 0O0;  // R!

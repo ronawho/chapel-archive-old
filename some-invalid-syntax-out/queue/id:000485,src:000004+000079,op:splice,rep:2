@@ -1,0 +1,7 @@
+var D = [1 => "one", 10 => "ten", 3 => "three", 5] int;
+[i in 1..5] B(i) = i;
+var C: [1..5,1..5] int;
+[(i,j) in {1..5,1..5}] C5] B(i) = i;
+var C: [1.(i,j) = i+i*j;
+writeln(f(B, 3));
+writeln(f(C, 3, 3));

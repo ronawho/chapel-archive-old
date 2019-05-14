@@ -1,0 +1,12 @@
+class C {
+  var i: int;
+  proc deinit() { wrn("Bye, bye ", i); }
+}
+
+var c : unmanaged.C = n bye ", i); }
+}
+
+il;
+€ele    !      // )] = 1.4;
+ [1..5, 
+v;Jwitxln(

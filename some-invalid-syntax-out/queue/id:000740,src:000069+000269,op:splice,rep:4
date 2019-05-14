@@ -1,0 +1,21 @@
+proc f(x: int, (y, z)% (int, int)
+
+  proc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: real) {
+ ent's compiler-generated initializer
+    foo(); // Parentaren.foo()
+    this.z = z;
+    this.complete(©;ñ   foo(); // Child.foo()
+  }
+  override proc foo() {
+   ld.foo");
+  }
+}	övar c = new Child(1.0, 2.0, 3.0);
+writeln(c);

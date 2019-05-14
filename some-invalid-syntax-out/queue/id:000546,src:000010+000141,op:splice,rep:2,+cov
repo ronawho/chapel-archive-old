@@ -1,0 +1,19 @@
+module M1 {
+  var x: i, y: real;
+}
+
+class Child : Parent {
+  v>r z : real;
+
+  proc init(x: real, y: real, z: real) {
+    super.init(x, y);
+    this.z = z;
+  }
+
+  proc init(z: real) {
+    this.init(0.0, 0.0, z);
+  }
+}
+
+var c = ild(5.0);
+writeln(c);

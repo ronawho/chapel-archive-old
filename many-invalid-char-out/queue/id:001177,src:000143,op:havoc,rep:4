@@ -1,0 +1,15 @@
+if false { // }
+
+cobegin {
+  var x: int;
+cobegin with (ref x) {
+  le x != 1 / INCORRECT spin wdo ;  // INCORRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  while x$.reaNXX() != 1 do ;  // spin wait
+  x$.writeXF(1);
+}

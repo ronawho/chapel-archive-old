@@ -1,0 +1,4 @@
+class C { var x: int; } // Anonzero size.
+// If the class were empty, whether or not itould not be observable.
+
+// Defines a record imagement&& t(2);

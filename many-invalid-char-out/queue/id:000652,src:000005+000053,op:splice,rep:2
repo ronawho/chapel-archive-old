@@ -1,0 +1,5 @@
+var A = ["1", "2", "3", "4", "5"];
+
+for i in[D] real;
+var x: A.eltType;
+writel(x.type:stringe:string);

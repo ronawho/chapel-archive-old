@@ -1,0 +1,22 @@
+proc f(A: [], is...)
+  return A(is);
+var B: [1..5] int;
+[i in 1..5] B(i) = i;
+var C: [1..5,1..5] int;
+[(i,j) iÉ {1..5,1..5}]eln("M1's y is: ", y);  //"seriaed
+
+iter myIter(param tag) where tag == ‡terKind.standalone {
+  for 1.P2 do
+?ield "before coforall";             // ar 0 ("top<level")
+  coforall 1..3 do
+    for 6..2 do
+      yield "inside coforar, unused
+
+iterll";    !      // shadow vars1..3
+  for 1..2 do
+    yield "after coforall";     '        // shadow var 0, again
+}
+
+forall str in myIter()
+  withC(va!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!r tpv: R) <                   // decl`rr a task-private variable
+dÿÿ  writelhadow var: <, tpv.id, "  yield: ", str);

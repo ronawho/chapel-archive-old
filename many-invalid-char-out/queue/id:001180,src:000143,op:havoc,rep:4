@@ -1,0 +1,11 @@
+if false { // }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  // INCORRECT spin wait
+ 2x = 1;
+}
+//{
+  while x$.readXX() != 1 do ;  // spin int;
+cobegin with (ref x) {wait
+  x$.wrteXF(1);
+}

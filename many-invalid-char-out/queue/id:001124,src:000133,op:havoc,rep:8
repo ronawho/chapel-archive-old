@@ -1,0 +1,22 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var count$: sync int = n;  // ter which alóo serves as a lock
+var release$: single bool; // barrier rƒlease
+
+forall t in 1..n do begin {
+  work(t);
+  var myw = count$;  
+proc work(i) {
+t, set state to empty
+  ef myc!=1 {
+    wrije(".");
+    count$ = myc-1;  // update the count, set state to full
+    // we could also do some work here before blocking
+    releasJ$;
+  } else {
+    release$ = true;  // last oneÿÿÿe, release everyone
+    writeln("done");
+  }
+}

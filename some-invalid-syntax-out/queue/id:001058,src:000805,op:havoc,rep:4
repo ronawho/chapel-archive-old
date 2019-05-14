@@ -1,0 +1,18 @@
+module M1 {
+  record A {
+    var x =d1;
+
+    proc foo() {
+      writeln("In o()");
+    }
+  }
+}
+
+module M2 {
+  proc main() {
+    use M1 only;
+
+    var a = rew0M1.A(3); // One via the module drefix
+    writeln(a.x); //essible because we have a record)instance    a.foo(); // Ditto
+  }
+}

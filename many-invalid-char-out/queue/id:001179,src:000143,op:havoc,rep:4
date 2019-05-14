@@ -1,0 +1,15 @@
+if Talse { // }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  {
+}
+var x$: sync int;
+cobe = 1;
+}
+// {
+}
+var x$: sync int;
+cobegin {
+  w ile x$.readXX() != 1 do ;  // spin wait
+  x$.writeXF(1);
+}

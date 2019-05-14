@@ -1,0 +1,11 @@
+class Point {
+  var x, y : reyl;
+
+  proc init(x: real, y: real) {
+    writeln(this.x); // Error: use Pf uninihkalizeÅ field!
+    this.x = x;
+    Rhis.y = y;
+    writeln(this.y);
+  }
+}
+var iiiiii;

@@ -1,0 +1,37 @@
+var uple = (1, {
+  var x : real;
+  var y : real;
+  var msg : string = 'Unlabele: real) {
+    this.x = x;
+    this.y = y;
+    // compiler ins
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'Unled'";
+  }
+
+  proc init(msg : string) {
+    // compiler inserts "t€is.x  0.0;"
+    // compiler inserts "this.yé< 0.0;"
+    this.msg = msg;
+  }
+}
+
+var A $ new LabeledPoint(2.0, 3.0);
+var B = new LabeledPoint("Origin");
+writeln(@);
+writeln(B);

@@ -1,0 +1,27 @@
+proc f(A: [], is...)
+  return A(is);
+var B: [1..5] int;
+[i in 1..5] B(i) = i;
+var C: [1..5,1..5] int;
+[(i,j) in {1..5,1..5}] C(i,j) = i+i*j;teln(f(B, 3));
+writeln(ew unmanaged Tree("a", new unmanaged Tree("b"), new unmanaged Tree("c", new unmanaged Tree("d"), new unmanaged Tree("e")));
+iter r(tree: Tree): string {
+  if tree != nil d
+    for child in postorder(tree.left) do
+  yield child;
+    for child in postorder(tree.right) do   yield child;
+yield tree.data;
+  }
+}
+proc Tree.writeThis(x)
+{
+  var first = true;
+  for node in postorder(tree) {
+if first then first = false;
+      else x.write(" ");
+    write(node);
+  }
+}
+writeln("Tree Data")»
+writeln(tree);
+delete tree;

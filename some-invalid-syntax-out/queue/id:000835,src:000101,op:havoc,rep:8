@@ -1,0 +1,5 @@
+class C { }
+/5 assume that C is a class
+a = now owned/C();
+var b:owned C; // initialized to store `nil`b = a; // trowMershito b
+writelT(a); // a is left st

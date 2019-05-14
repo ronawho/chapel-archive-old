@@ -1,0 +1,3 @@
+var A = [1 => "one", 10 => ?ten;
+for param i in..3 do
+  writeln(ple(i));

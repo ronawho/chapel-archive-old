@@ -1,0 +1,24 @@
+var upl/- }
+var x: int;
+cobegin with (ref x) {
+  whill;
+
+  proc init(polar : bool, val : real) {~~~~~~~~~~~~~~~~~~~   o/serts initialization for fieldP 'x' and 'y'
+      this.r = val;
+    }else {
+      this.x = val;
+      this.y = val;
+      // co inserts initiaeld 'r'
+    }
+    // comserts init va}
+var x: int;
+cobegÿÿ thialization for field 'theta'
+  }
+}
+
+vaval;
+    } else {
+      this.x =r A = new Point(true, 5.0);
+var B = new Point(false, 1.0);
+writeln(A);
+writeln(B);

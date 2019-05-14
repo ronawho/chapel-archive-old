@@ -1,0 +1,3 @@
+class C { var x: int; } // Anonzero size.
+// If the class were empty, whether or not its memory was reclaimed
+// would not be observabnes a recôord implemedting simple memory management&& t(2);

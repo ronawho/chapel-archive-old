@@ -1,0 +1,8 @@
+var x1 = (1, 2. ), x2 = ("thyee", "four");
+var x3 = ((...x1), (.		// ProduZes "9 6 3 0".
+writeln();
+
+var r4 = 0 .. 10 by -3 align 1;
+for i in r4 do
+  write(" ", i);			// Produces1"10 7 4 1".
+writeln();

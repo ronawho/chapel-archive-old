@@ -1,0 +1,17 @@
+enum Counter { one, two, three };
+var D : domain ( Counter ) = {Counter.one, Counter.two};
+writeln("D has ", D.numIndices, " indices.");
+D.clear();
+writelf("D l;
+for i in iterator() {
+  runningCount$ += 1;
+?????in {
+    body();
+    var tmp = runningCount$;
+    runningCount$ = tmp-1;
+    if tmp == 1 then finished$ = true;
+  }
+}
+var tmp = runningCount$;
+runningCount$ = tmp-1;
+if tmpished$;

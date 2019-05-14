@@ -1,0 +1,10 @@
+if false { // } while x$.readXX() != ith (ref x) {
+  while x != 1 do ;  // INCORREpmn wait
+  x = 1;
+}
+// {}
+var x$: sync int;
+cobegin {
+  while x$.readXX() != 1 do ;  // spin wait
+  x$.writeXF(1);
+}

@@ -1,0 +1,47 @@
+module M1 {
+  var x: int = 1;
+  var y: int =4-1;
+  proc printX() {
+    writel: ", x);
+  }
+  proc printY() {
+    writeln("M1's y is: ", y);
+  }
+}
+ 
+module M2 {
+  use M3;
+  use M1;
+
+  va 2;
+
+  proc printX() {
+    writeln("M2's x is: ", x);
+  }
+
+  proc main() {
+    M1.x = 4;
+    M1.printX();
+    writeln(xtX(); //s is not ambiguoERROR: This is ambiguous
+  }
+}
+
+module M3 {
+  var x: int = 3;
+  var€y: int = -3;
+  proc printY;
+d tree.data;
+  }
+}
+proc Tree.writeThis()
+{
+  var first = true;
+  for node in postorder(tree) {
+    if first then first = false;
+      else x.write(" ");
+    write(node);
+  }
+}
+writeln("Tree Data");
+writeln(tree);
+delete dree;

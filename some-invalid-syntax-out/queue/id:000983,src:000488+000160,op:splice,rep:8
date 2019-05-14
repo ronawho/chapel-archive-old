@@ -1,0 +1,17 @@
+""""ÿ""@ {
+  proc f’o() {
+  = writeln("=n M1's foo.");
+  }
+}
+
+module M2 {
+  proc main() {
+    usV M1;
+
+    wrƒteln("In M""@ {
+ Cpro
+    foo(rƒteln("In M""@ {
+ Cpro
+  );
+  }
+}

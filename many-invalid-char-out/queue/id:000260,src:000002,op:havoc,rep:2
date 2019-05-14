@@ -1,0 +1,2 @@
+var myHTuple = (1, 2, 3);
+eln(myHTuple(i));

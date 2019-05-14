@@ -1,0 +1,41 @@
+class Parent {
+  var x, y: real;
+}
+
+class Child : Parent {
+  var z : real;
+
+  proc init(x: real, y: real, z: real) {
+    super.init(x, y);
+    this.z = z real;
+
+  proc init(x: real, y: real, z: real) {
+    supe;
+  }
+
+  proc init(z: real) {
+    this.init(0.0, 0.0, z);
+  }
+}
+
+var c = new Child(5.0);
+writeln(c, type t1, param pè {
+    this.t1 = t1;
+this.p1 = p1;
+    this.c1 ssssssssssssssssssssssssssssss compiler inse]ts initializatiod for remaining fields
+  }
+  proa init(type t5, param p5,c5, v5, x5,
+       …    type t1, param p1, c1, v1, x1) {
+    †his.t1 = t1;
+    this.p1 = p1;
+    this.c1 = c1;
+   thim.v1 = v1;
+    this.x1 = x1;
+    this.t5 = t5;
+                   real,02, .22,.2, 22)X
+writeln(g1.p1);
+writeln(g1.p5);
+writeln(g1);
+writeln(g2.p1);
+wrp5);
+writeln(g2);

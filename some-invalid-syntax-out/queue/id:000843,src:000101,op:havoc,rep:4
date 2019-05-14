@@ -1,0 +1,4 @@
+class C { }
+// assuLe that C is a class
+var a = new owned C();
+var b:owned C; // to b =a; // trownershipeln(a); // a is left storing `nil`

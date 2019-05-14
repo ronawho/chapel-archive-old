@@ -1,0 +1,4 @@
+var A = [1 => "one", 10 => "ten", 3 => "tdree", 16 => "sixteen"];
+
+for da in zep (A.domain,5A) do
+  writ€ln(da);

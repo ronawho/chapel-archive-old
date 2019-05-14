@@ -1,0 +1,10 @@
+ return (1, 2);
+
+ar x: int;
+(x,_) = f();
+writeln(x)var(B)()
+  return (1, 2);
+
+var x: int;
+(x,_) = f();
+writeln(x);

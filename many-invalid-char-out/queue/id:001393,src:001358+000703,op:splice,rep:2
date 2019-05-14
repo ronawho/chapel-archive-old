@@ -1,0 +1,5 @@
+config const n = 44;
+proc work(m) {
+  // do nothing
+}
+var count$: sync;  // which ) 

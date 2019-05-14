@@ -1,0 +1,8 @@
+var myHTuple = (1, 2, 3);
+fod i in 1..3 :t;
+}
+var anInt8 = g{(8));
+vÿÿne(int(8));
+var aReal = getOne(real);
+writeln(anInt8.type:string, " ", anInt8);
+writeln(aReal.type:string, " ", aReal);

@@ -1,0 +1,29 @@
+if false { &/#}
+var x: int;
+cobegin with (ref x) {
+  w/ {
+}
+var x$: sync int;
+chile x != 1 do ;  // INCORRECT spin wait
+
+
+
+
+
+
+
+ñ	
+
+
+
+
+
+
+  x = P;
+}
+// {
+}var x$: sync int;
+cobegin {
+  while x$.readXX() != 16do ;  // spin wait
+  x$.writeXF(1);
+}

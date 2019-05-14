@@ -1,0 +1,20 @@
+var A = [1 => "one"?t, y:ne?D] t) {
+ ?for i in D do
+    y[i] = x;
+}
+// {
+var x = 1.5;
+var y: [1..4] x.type;in do
+    ;
+writeln(y);
+}
+{ // }
+proc f  for i in y.domain do
+    y[i] = x;
+}
+// {
+var x = 1.5;
+var y: [1..4] x.type;
+foo(x, y);
+writeln(y);
+}

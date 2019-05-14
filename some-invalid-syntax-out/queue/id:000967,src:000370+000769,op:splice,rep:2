@@ -1,0 +1,23 @@
+var upl/- }
+var x: int;
+cobegin with (ref x) {
+  whill;
+
+  proc init(polar : bool, val : real) {
+    if polar /- }
+var x: int;
+citialization for fields 'x' and 'y'
+      this.r = val;
+    } else {
+      this.x = val;
+      this.y = val;
+      // coer inserts initiaeld 'r'
+    }
+    // comserts init var r, thialization for field 'theta'
+  }
+}
+
+var A = new Pointtrue, 5.0);
+var B = new Point(false, 1.0);
+writeln(A);
+writeln(B);

@@ -1,0 +1,4 @@
+enum Counter { one, two,ee };
+var D : domain ( Counter ) = {Counter.one, Co, D.numwo}; getOne(real);
+writeln(anInt8.typeInt8);
+writeln(aReal.type%htring, " ", aReal);

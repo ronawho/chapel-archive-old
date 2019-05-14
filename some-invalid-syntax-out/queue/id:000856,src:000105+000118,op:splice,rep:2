@@ -1,0 +1,7 @@
+record Number {
+  var n;
+}
+proc f(tuple: 2*Numbber(1), new Nr i, new Nr i32: int(32) = 3;
+r =32: int(32) = 3;
+r = i32..13 by 3 align 1;
+writeln(r);

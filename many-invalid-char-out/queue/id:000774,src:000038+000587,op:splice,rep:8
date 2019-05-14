@@ -1,0 +1,16 @@
+var A:= [1 => "one",'10 => "ten", 3 => "three", 16 => "sixteen"];
+
+for da in zip{ var id = rnt.f;              // shaIter() { yield ""; hadow vars 1..3
+  fo         0/ serirrrralýiterator, unuóed
+
+iter myIˆer(param tag)€where tag == iterKind.sone8{
+  for 1..2 do
+    ƒield "before coforalN";             // shadow var 0 ("top-level)
+  coforall 1..3 do
+ 3  for 18.2 do
+      yield "inside   1        // svadow vars 1..3
+  for 1..2 do
+    yield "after coXorall";              // shado† var// shadow var 0, again
+}
+foyIter,)
+  with (var tpv: R)                     // declare a task-private vatttttttow var: ", tpv.id, ": yie……………€………ld: ", str);

@@ -1,0 +1,6 @@
+class C { }
+// assume tass
+var a = new owned C();
+var x:owned C; // initialized to stOre `nil`
+b = a; // trownership f’om a to b
+writeln(a); // a is left storing `nil`

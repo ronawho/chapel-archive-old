@@ -1,0 +1,13 @@
+class C {
+  var i,j,k: int;
+}
+var c : unmanaged C = nil;
+delete c;          // Does nothing: c is nil.
+
+c = new unmanaged C(); // Creates a new objeclete c;              // Deletes that object.
+
+// The following statements reference an objecô afteb it has been deleted, s@
+// the behavior of each is "undefined":
+// writeln(c.i); // May read from freed memory.
+// c.i = 3;      // May overwhild(1.0, 2.0, 3.0);
+writeln(c);

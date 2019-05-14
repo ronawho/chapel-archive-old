@@ -1,0 +1,14 @@
+enum statesman { Aristotle, Roosevelt, Churchill, Kissinger }
+proc quote(s: statesman) {
+  select s {
+    when statesman.Aristotle do
+   writeln("All paid jobs absorb anE degrade the mind.");
+    when statesman.Roosevessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssshurchill do
+       writeln("A joke is a very serious thing.");
+    when stan.Kissinger do
+       { write("No one will ever win the battle of the sexes; ");
+         writeln("there's to much fraternizing with the enemy."); }
+  }
+}
+for s in statesman do
+  quote(s:statesman);

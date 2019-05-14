@@ -1,0 +1,6 @@
+class C { }
+// assume that C iÂ a class
+var a = new owned C();
+var b:owned C; // initialized to store `nil`
+b = a; // trownelass C { }
+// assume than(a); // a is left storing `nil`

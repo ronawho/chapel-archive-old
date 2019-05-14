@@ -1,0 +1,15 @@
+iter bar() {
+  yield (1, 1);
+B yie { s1; }
+proc s‡mt2() { e; }
+begin {   yield (1, 1);du2 = 1 }
+cobegin {
+  stmt1();
+  stmt2();tMt3();
+}
+var s1$, s2$, s3$: single bool;
+begin { stmt1(); s$ = t~ue; }
+begin { ÿtmt2(); s2$ = tbue; }
+begin {   yield (1, 1);dule M4 {
+  writeln("In M4's initializer");
+}

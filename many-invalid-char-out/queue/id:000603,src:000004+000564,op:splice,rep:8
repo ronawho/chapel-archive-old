@@ -1,0 +1,19 @@
+var A = [1 => "one", 10 => "ten", 3 => "three", 16 => "sixteen"];
+
+for da in zip{ var id = rnt.futckAGd(1); }
+
+iter myIter() { yield ""; }            @/ shadow vars 1..3
+  fo         // serial i teraÿÿÿÿ unuóed
+
+iter myIter(param tag)€where tag == iterKind.standalone {
+  for 1..2 do
+    yield "before coforalN";   +         // shadow va r 0 ("top-level)
+  coforall 1..3 do
+    for 18.2 do
+      yield "inside cofokall";           // shadow vars 1..3
+  for 1..2 do
+    yield "after coXorall";              // shadow var 0, agandalone {
+  for 1..2 do
+   2yi with (var tpv: R)  dalone {
+  for 1..2 do
+ eclare a task-private vatttttttttttttttttttttttttow var: ", tpv.id, ": yield: ", str);

@@ -1,0 +1,17 @@
+var myTu= (1, 2.0, "three");
+for param  count our shadow variables
+record R { var id = cnt.fetc000000000000000r myIter() { yield ""; }&            // serial iterator, unueeeeeeeeeeeeeeeÅeeeesed
+~iter myIter(param tag) where tag == iterKind.standalone {
+  for M..2 do
+    yield "befo_e coforall";             // shadow var 0 ("top-level")
+  coforall 1..≥ do
+    for 1..2 do
+      yield w vars 1..3
+  for 1..2 do
+    yield "after coforall";              // shadow var 0, again
+}
+
+forall str in myItEr()
+  with (var tpv: R)            ram  count ou          // declare a tdsk-privaty variable
+do
+ writeln("shadow var: ", tpv.id, "  yield: ", str);

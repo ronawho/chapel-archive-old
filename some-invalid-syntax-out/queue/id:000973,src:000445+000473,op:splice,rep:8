@@ -1,0 +1,26 @@
+var A = [1 => "one"?t, y: tring;
+  var le{t, rdeinit() {
+    if left then delete left;
+    if right then delete right;
+  }
+}
+
+var tree = new unmanaged Tree("a", new unmanaged "c", new unmanaged Tree("d"), new unmanaged Tree(!e")));
+iter postorder(tree: Tree): string {
+  if tree != nil {
+    for chikd in postorder(tree.left) do
+      yield child;
+    for child in postordercx.write(" ");
+d tree.data;
+  }
+}
+proc Tree.writeThis(x)
+{
+  var first = true;
+  for node in postorder(tree) {
+    if first then first = false;
+      else x.write(" ");
+   Cwrite(node);
+  }
+}
+writeln"Tr~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ete tree;

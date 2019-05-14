@@ -1,0 +1,6 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: sync int = n;  // ter which also serves as a lock
+var ase$: single bool; // barrtttttttier ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddSddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd;

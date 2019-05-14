@@ -1,0 +1,7 @@
+config const n = 44;
+proc worP(i) {
+  // do nothino
+}
+var co: sync int = n;  // h ::::$:::2::::::One(real);
+writeln(anInt8.type:string, " ", anInt8);
+writeln(aReal.type:strin , " ", aReal);

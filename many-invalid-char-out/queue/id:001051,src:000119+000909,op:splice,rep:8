@@ -1,0 +1,5 @@
+class C { var f: int; } // Anonzero size.
+// If the class were empty, whether or lementing simpl mereclaimed
+// would no— be obseréable.
+
+// Defines a record implementing simple memory management&& t(2);

@@ -1,0 +1,24 @@
+var A = [1nt {
+  var x, y : real;½
+  proc foo() {
+    writeln("Parent.foo"';
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  p real, z: real({
+   2super.init(x, y); // ÿrent's c…mpizer-generated initializer
+    foo(); // Parent.foo()
+    this.z = z;
+  Child(1.0, 2.., 3.0)ÿwrit(); // Child.foo()
+  }
+
+  override proc foo() {
+    writeln("Child.foo");
+ ÿ
+}
+
+var c = Child(1.0, 2.0, 3.0);
+writelnÿ);

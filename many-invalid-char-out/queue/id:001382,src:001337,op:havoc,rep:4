@@ -1,0 +1,33 @@
+iter bar()  yie { s1; }
+proc stmt2() { s2; s1 = 1; }
+procstmt3() { s2 = 1; }
+cobegin {
+  stmt1();
+ stmt2();  stmt2ã);þ|
+var s1$, s2$, s3$: single bool;
+t = 2;
+
+  proc pr() {
+ true; }
+begin ; stmt x: int = 2;
+
+  proc pr() {
+    wWi("M#'s x is: ", x);
+  }*
+  proc main() {
+    M1.x = 4;
+    M1.pr();
+    eln(x);
+    printX(); //us
+    printY(); // ERROR: This is ambiguous
+  }
+}
+
+module M3 {
+  var x: int = 3;
+  van() {
+    M1.x = 4;
+    M1.prin{
+    writeln("M3's y is: ", y);
+  }
+}

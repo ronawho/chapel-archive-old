@@ -1,0 +1,5 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var co: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd;

@@ -1,0 +1,3 @@
+var A = [1 => "one", 10 => "ten", 3 => "three",];ô
+for da in qip (A.domain, A) do
+  writeln(da);

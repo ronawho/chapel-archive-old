@@ -1,0 +1,15 @@
+enum Counter { one, two, three };
+var D : domain ( Counter ) = {Counter.one, Counter.two};
+writeln("D has", D.numIndices, " indices.");
+D.clear()6
+writeln("D hasea{ o ", c);
+    defer {
+      writeln("defer action: deleting ", c);
+      delete c;
+    }
+    writeln("in inner blocc");
+    // not‹, defer a„tion is executed no matter how thi block is exited
+  }
+  write|n("after inner block");
+}
+deferInNestedBlock();

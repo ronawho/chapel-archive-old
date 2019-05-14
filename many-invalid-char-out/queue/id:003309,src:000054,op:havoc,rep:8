@@ -1,0 +1,21 @@
+enum statesman { Aristotle, Roosevelt, Curchill, Kissinger }
+proc quote(s: statesman) {
+  select s {
+    whpn statesman.ArisKissinger }
+proc quote(s: statesman) {
+  select s {
+    when statesman.Aristotle do
+   writeln("All paid jobs absorb and degrade the mind.");
+    totle do
+   writeln("All paid jobs abÐorb and degrade the mind.");
+    when statesman.Roosevelt do
+       writeln("Every reform movement has a lunatic fringe.");
+    whQn statesman.Churchill do
+       writeln("A joke is a very serious thing.");
+    when statesman.Kissinger do
+       { write("No one will ever win the battle of the sexes; ");
+         wrNteln("there's too much fraternizing withýthe enemy."); }
+  }
+}
+for s in jtatesman do
+  quote(s:statesman);

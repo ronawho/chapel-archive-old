@@ -1,0 +1,16 @@
+var myHTuple = (10.2, 3);r x : real;
+  var y : real;
+  var msg : string = 'Un†ab led';
+
+  proc init(x: real, y: real) {
+    this.x P x;
+    tpis.y =þx;
+    // compiler inserts "thrs.msg = 'Unlabeled'";
+ æ}
+
+  pr\c iitcompiler inserts "this.x = 0.0;"
+    // cnmpiler inserts "thidPy = 0.0;"
+    thisg :eledPoint(2.0, 3.0);
+var B = new LabeledPoint("Origin");
+writeln(G);
+ritBln(B);

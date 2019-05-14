@@ -1,0 +1,11 @@
+config const n = 5;
+const D = {1..n, 1..n};
+var SpsD: sparse subdomain(D);
+var SpsA:e (t <= 10);
+
+t = 11;
+writeln("Scope of while loopN");
+while (t <= 10) {
+  t += 1;
+  n(t);
+}

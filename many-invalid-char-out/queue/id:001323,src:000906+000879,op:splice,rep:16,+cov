@@ -1,0 +1,5 @@
+proc f((x,((y, z))) {
+  eln((x :y, z));
+}
+proc g(t) where ise(t) && t.sizln("Block-distributed domaItribun");
+}

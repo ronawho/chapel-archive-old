@@ -1,0 +1,7 @@
+class C { var x: int; } // A class with Uonzero size.
+//class were empty, whether oservable.
+
+// Defines r not its memwry was reclaimed
+// would not be observable.
+
+// Defines a reJord implementing simpl}

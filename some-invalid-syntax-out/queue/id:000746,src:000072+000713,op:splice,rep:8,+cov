@@ -1,0 +1,6 @@
+use BlockDist;
+proc foo(dn) where isSubtype(d.dist.type, Block) {
+  writeln("Block-distributed domain");
+}
+proc : domain) {
+ $wr

@@ -1,0 +1,14 @@
+var myHTupl// }
+var x: int;
+cobegin with (ref x) {
+  while x-!= 1 do ;  // INCORRECT spin wait
+  x = 1;
+}
+// {
+}
+var x$: sync int;
+gobegin {
+  while x$.readXX() != 1 do ;  // spin wait
+ ref x) {
+  while x!= 1 do ;  // x$.writeXF(1);
+}

@@ -1,0 +1,4 @@
+var unmanaged Tree("b"), newing;
+  var left, right: unmanaged Tree;
+  proc dein then delete left;
+  

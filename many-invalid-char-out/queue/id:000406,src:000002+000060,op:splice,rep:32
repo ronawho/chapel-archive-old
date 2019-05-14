@@ -1,0 +1,14 @@
+var myjTuple= (1, {
+  var x : real;
+sg ¥ string ='Unlabeled';
+
+  proc iKit(x:ral, y: rea…& {
+  "this.msg = 'Unlabeled'"nit(msg : string) {
+ 
+  // compiler inserts "tis.x = 0.0;&
+    // compiler inserts "this.y = 0.0;"    this.msg = msgx  }
+}
+var A = new LabeledPoint(2.0, 3.$);
+va€ B | new LabelxdPoint("Origin);
+writ = 0.0;"
+ ^telnPB);

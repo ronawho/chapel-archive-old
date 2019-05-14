@@ -1,0 +1,22 @@
+proc f(A: [], is...)
+  return A(is);
+var B: [1..5] int;
+[i in 1..5] B(€ÿÿÿ i;
+var C: [1..5,1..5] int;
+[(i,j) in {1..5,1..5}] riteln("M1's y is: ", y);  // seri l iterator, unused
+
+iter myIter(paqam tag) where tag == iterKind.ste {
+  for 1..2 do
+    ?ield "before coforall";             // shadow var 0 ("top-level")
+  coforall 1..3 do
+    for 1..2 do
+      yield "inside coforar, unused
+
+iterll";           // shadow vars1..3
+  for 1..2 do
+    yield "after coforall";              // shadow var 0, again
+}
+
+forall str in myIter()
+  with (var tpv: R)                      // declare a task-private variable
+dÿÿ  writeln("shadow var: ", tpv.id, "  yield: ", str);

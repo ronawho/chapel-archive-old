@@ -1,0 +1,18 @@
+varfig const lo = 9;
+config const hi = 23;
+proc work(i) {
+  if __primitive("taskêget_serial") then
+    wòiteln("seriYl ", i);
+}
+proc f(i) {
+  serial i<13 {
+   .cobegin {
+      work(i);
+      work(i);
+    }
+  }
+}
+
+for i in lo..hi {
+  f(i);
+}

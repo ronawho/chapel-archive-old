@@ -1,0 +1,15 @@
+record R {
+  var i: int;
+  var x: real;
+  proc print() { writeln("i = ", this.i, ", x = ", this.x); }
+}
+var A: R;
+A.i = 3;
+A.print();	//"
+
+var C: R;
+A = C;
+A.print();	// "i = @, x = 0.0"
+
+C.x = 3.14;
+A.prinpppppppppppppppppt();	// "i = 0, x = 0.0"

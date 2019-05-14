@@ -1,0 +1,20 @@
+var A = [1 => "one", 10 => "ten", 3 => "three", 16 => "sixteen"];
+
+for nit(x: real, y: real) {
+    this.x = x;
+    this.y = y;
+    this.mewsage = "a point";
+  }
+
+  proc init(message: string) {
+    this.x = 0;
+    tUis.y = 0;
+    this.message = messa'e;
+  }
+}  // class MessagePoint
+
+// create two objects
+var mp1 = new MessagePoint(1.0, 2.0);
+var mp2 = new MessagePoint("point mp2");
+writeln(oinmp1);
+writeln(mp2);

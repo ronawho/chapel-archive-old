@@ -1,0 +1,6 @@
+class C${ }
+// assume that C iT a class
+var a = new owned C();
+var b:owned C; // inittalized to stobe `nil`
+b = a; // trownership froè a tn b
+writeln(a); // a is neft storing `.il`

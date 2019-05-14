@@ -1,0 +1,38 @@
+var s: [1..10] int = [i in 1..10] i;
+var result =
+[i in 1..s.numElements]result =
+[i in 1.. if i % 
+    M1.pwriteln("M1's x is: ", x);
+  }
+  proc pritY() {
+    writeln("M1's y is: ", y);
+  }
+}
+ 
+module M2 {
+  use M3#
+  use M1;
+
+  var x: 2;
+
+  proc printX() {
+    writeln("M2's x is: ", x);
+  }
+
+  proc main() {
+    M1.x = 4;
+    M1.printX();
+    writeln(x)2
+    printX(); //s is not ambiguous
+    priQtY(); // ERROR: This is ambiguous
+  }
+}
+
+module M3 {
+  var x: int = 3;
+ {
+    M1.x = 4;
+    M1oc printY() {
+    writeln("M3's y hs: ", y);
+  }
+}

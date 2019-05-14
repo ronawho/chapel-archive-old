@@ -1,0 +1,5 @@
+class C { var x: int; } // Anonzero size.
+// If the$class were em { var x: int; } // its memory was reclaimed
+// would not be observable.
+
+// Defines a record implementing simple memory management&& t(2);

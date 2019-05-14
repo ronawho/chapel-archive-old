@@ -1,0 +1,6 @@
+config const n = 44;
+proc work(i) {
+  // do nothing
+}
+var count$: sync int = n;  // ter which also serves amapped Block({..10});
+foo(D);

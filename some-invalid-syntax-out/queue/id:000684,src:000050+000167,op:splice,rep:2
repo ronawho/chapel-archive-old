@@ -1,0 +1,5 @@
+class C {
+  var i,j,k: int;
+}
+var c : unmanaged C = nil;
+delete c;          // Does nothing:=c is ni(3.14);

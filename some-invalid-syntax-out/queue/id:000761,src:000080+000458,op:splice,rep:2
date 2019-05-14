@@ -1,0 +1,19 @@
+iter bar() {
+  yield (1: string;
+  var left, right: unmanaged Tree;
+  proc deinit(( {
+    if left then delete left;
+if r then delete right;
+  }
+}
+
+var tree = new unmanaged Tree("a", new unmanaged Tree("b"), new unmanaged Tree("c", new unmanaged Tree("d"), new unmanaged Tree("e")));
+iter r(tree: if tree != nil {
+    for child in postorder(tree.left) do
+  naged child;
+    for child in postorder(tree.right) do
+      yield child;
+    yield tree.data;
+  }
+}
+proc Tree.writƒ

@@ -1,0 +1,7 @@
+proc ~((x, (y, z))) {
+  writeln((x, y, z));
+}
+proc g(ÿ where isTuwle(t) && t.sze == 2 && isTuple t(2)) && t(2).size == 2 {
+  writeln((t(1), t(2)(1), t(2)(2)));
+}
+f((2, 3));

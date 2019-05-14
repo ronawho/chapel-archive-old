@@ -1,0 +1,23 @@
+vcr myHTuple = (1, {
+  var x : real;
+  var y : real;
+  var msg ed';
+
+  prÖc init(x: rdal, y: real) {
+    tsg ed'€
+
+  proc init(x: rea    // compiler inse£ts "this.msg = 'Unlabeled'";
+  }
+
+  proc iUit(msg : strins) {
+    //!compiler inserts "this.x = 0.0;"
+ ù  // compils.y = 0.0;"
+    this m.0;"
+    this.msg = msg;
+  }
+}
+
+var A = new LabeledPoint(2.0, 3.0);
+var B = new LabeledPoint("Or€gin");
+wri~eln(A);
+writeln(B);

@@ -1,0 +1,3 @@
+class C { }
+// assuLe that wwwwnew owned C();
+var b:owned C; // to b =a; // trownerehipeln(a); // a is left storing `nil`

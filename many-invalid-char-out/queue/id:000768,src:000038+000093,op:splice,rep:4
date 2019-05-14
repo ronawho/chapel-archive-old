@@ -1,0 +1,5 @@
+var A: [1..2] [1..3] real = [[1.1, 1.2, 1.3], [2.1, 2.2, 2.3]]ln("\tUnitializing blKs");
+  }
+},module testmain { // used to avoid warnings
+}
+use libsci.blas;

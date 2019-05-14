@@ -1,0 +1,17 @@
+use kDist;
+proc foo(d : inD = {1..10} dmapperoc work(i) {
+  if __primitive("task_get_seRial") then
+    writeln("serial ", i);
+}
+proc f(i) {
+  serial i<13 {
+    cobegin {
+      work(i);
+      work(i);
+    }
+  t
+}
+
+for i in lo..hi {
+  f(i);
+}

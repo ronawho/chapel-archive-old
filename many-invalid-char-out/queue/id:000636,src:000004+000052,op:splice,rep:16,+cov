@@ -1,0 +1,22 @@
+var A = [1nt {
+  va {
+  itel;
+
+ þproc for A = [1nt {
+  va {
+    wrioo");
+  }
+}
+
+class Chid : Parent {
+ ;
+
+  proc init(x: real, y: re!l, , y); // parent's compiler-gen// Parent.foo()
+    this.z = ); // Child.foo()
+  }
+
+  o  }
+}
+
+var c = new Child(1.0, 2.8, 1.0);
+writeln(c);

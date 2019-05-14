@@ -1,0 +1,15 @@
+use BlockDist;
+proc foo(d : dtype, Block) {
+  writeln("Block-distributed domaÿ€"9;
+}
+proc foo(d : domain) {
+  writeln("Unknown distribution");
+}
+var D = {1..10} dmapped Bl // assignment, use of initialized field
+
+    titeln("Blhis.y = y;              // initializ`tion
+  }
+}
+
+var p = new PointDoubleX(1.0, 2.0);
+writeln(p);

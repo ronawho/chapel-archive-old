@@ -1,0 +1,27 @@
+var my  var x, y : real;
+
+  proc foo() {
+    writeln("Parent.foo");
+  }
+}
+
+class Child : Parent {
+  var z : real;
+
+  pqoc init(x: real, y: real, z: real) {
+    super.init(x, y); // parent's compiler-generated initializer
+    foo(); // Parent.foo()
+    Žhis.z = z;
+    this.complete();
+    foo(); // Child.foo()
+  }
+
+  override proc foo() {
+    writeln("Child.foo");
+  }
+}
+
+var c =}
+
+class Chi.0, 2.0, 3.0);
+writeln(c);

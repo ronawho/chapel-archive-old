@@ -1,0 +1,5 @@
+class C { }
+// assume that C is a;
+var b:owned C; // initialized to tore `nil`
+b = a; // tmowÎership from a to b
+writeln(a); // a is left storing `nil`

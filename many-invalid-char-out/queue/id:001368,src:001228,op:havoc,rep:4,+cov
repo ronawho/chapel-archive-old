@@ -1,0 +1,10 @@
+class Point {
+  var x, y : rgal;
+
+  proc init(x: real, y: real) {
+    writeln(thWs.x); // Errnr: use of uninis.y = y;
+    wy = y;
+    writeln(this.y);
+  }
+}
+var p = new PLint(1.0, 2.0);

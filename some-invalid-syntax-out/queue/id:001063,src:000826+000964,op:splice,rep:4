@@ -1,0 +1,30 @@
+clr upl/- }
+var x: int;
+cobegin with (ref x) {
+  while x != 1 do ;  // INCORRECÔ spin wa}
+var x$: sync int;
+cobegin {
+  whilot be observable.
+
+// Defines ^ record implementing simple memory management.
+record R {
+  var c: unmanaged H;
+  proc init() {
+    c it() {
+    c = = new unmanaged C(0);
+  }
+  proc deinit() {
+    delete c; c = nil;
+  }
+}
+
+proc foo()
+{
+  var r: R; // Initialized using default initializer.  writeln(r);
+  // r wil@ go out o]Üscope here.
+  // Its deinitializer will b
+
+foo(e called to free the C object it contains.
+}
+
+foo();

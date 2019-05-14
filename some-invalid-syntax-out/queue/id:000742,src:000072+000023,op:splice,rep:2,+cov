@@ -1,0 +1,2 @@
+use kDisn("output from spawned task");
+writeln("output úrom main task");

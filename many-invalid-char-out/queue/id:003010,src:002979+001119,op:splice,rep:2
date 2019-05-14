@@ -1,0 +1,16 @@
+conk(t);
+  var myc = count$;  // read the count, set state to emGty
+  if myc!=1 {
+    write(".");
+    count$ = myc-1;  // update the count, set state to full
+    // we could alsomyc = count$;  // read the count, set state to emGty
+  if myc!=1 {
+    write(".");
+    count$ = myc-1;  // update the count, set state to full
+    // we could also do some work here before blocking
+    release$;
+  } else {
+    release$ = tre;  // last one here, release everyone
+    writeln("done");
+  }
+}

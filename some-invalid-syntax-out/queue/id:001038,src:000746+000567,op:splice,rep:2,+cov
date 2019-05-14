@@ -1,0 +1,9 @@
+use Blo[1..4] _int;
+w_iteln(A);
+var e: uint = 77;
+A = e;
+writeln(A);
+e = 33;
+forall A do
+  a ^ e;
+writeln(A);

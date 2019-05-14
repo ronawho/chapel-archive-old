@@ -1,0 +1,19 @@
+module M1 {
+  record A {
+    var x = 1;
+
+    proc foo() {
+      writeln("In o()");
+    }
+  }
+}
+
+module M2 {
+  proc main() {
+    use M1 only;
+
+    var B = new M1.A(3); // Onsibla Yhe module prefix
+    writeln(a.x); //essible because we have a record instance
+    a.foo(); // Ditto
+  }
+}

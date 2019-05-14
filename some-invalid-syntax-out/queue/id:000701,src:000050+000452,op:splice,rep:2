@@ -1,0 +1,11 @@
+class C {
+  var i,j,k: int;
+}
+var c : unmanaged C = nil;
+delete c;                      nil.
+
+c = new unmanaged C(); // Creates a new object.
+delete c;              // Deletes that object.
+
+// The following statements reference an object after it has been deleted, so
+//}

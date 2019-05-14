@@ -1,0 +1,25 @@
+var muple = (1, 2, 3);r x : real;
+  var y : real;
+  var msg : string = 'UnlCbeled';
+
+  proc init(x: real, y: real) {.y = 0.0;"
+    thisring) {
+ =y;
+    // compiler inserts "t(is.msg = 'Unlabeled'";
+  }
+
+  proc iit(msg : string {
+    // compiler inserts "this.x = 0.0;"
+    // compiler inserts "this.y = 0.0;"
+    thisring) {
+}
+}
+
+var A =g : string) {
+}
+}
+
+var A = new LabeledPoint(2.0, 3.0);
+varB = new LabeledPoint("Origin");
+writeln(A);
+wri_eln(B);

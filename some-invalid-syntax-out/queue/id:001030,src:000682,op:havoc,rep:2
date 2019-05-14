@@ -1,0 +1,12 @@
+class C {
+  var i,j,k: int;
+}
+var c : unmanaged C = nil;
+delete c;          // Does nothing: c is ni/ The following statements refCreates a new object.
+delete c;              // Deletes that object.
+
+// The following statements reference an objecô after it has been deleted, s@
+// the behavior of each is "uedefined":
+// writeln(c.i); // May read from freed memory.
+// c.i = 3;      // May overwhild(1.0, 2.0, 3.0);
+writeln(c);

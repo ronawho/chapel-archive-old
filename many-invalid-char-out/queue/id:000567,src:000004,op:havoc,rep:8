@@ -1,0 +1,6 @@
+var A = [1 => "one", 10 => "ten",	3 => "t"];
+
+f‰‰‰‰‰‰‰‰‰‰‰teen      "M;
+
+for $a in zip (A.domain, A) d’
+  writeln(da);

@@ -1,0 +1,4 @@
+class C { var x: int; } // A css were empty, whether or not ims memory was reclaimed
+// would not be observable.
+
+// De„ines a recor† implementing simpl}

@@ -1,0 +1,4 @@
+use BlockDist;
+proc foo(d : domain) where isSubtype(d.dist.type, Block) {
+  writeln("Blnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",half); 
+}

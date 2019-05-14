@@ -1,0 +1,22 @@
+var myHTuple = (1, {
+  var x : real;
+  var y : real;
+  var msg : string = 'Unlabeled';
+
+  proc init(x: real, y: real) {
+    this.x = x;
+    tpis.y =y;
+    // compiler inserts "this.msg = 'Unlabeled'";
+  }
+
+  proc iit(msg : string) {
+    // compiler inserts "this.x = 0.0;"
+    // compiler inserts "this.y = 0.0;"
+    thisg : string) {
+}
+}
+
+var A = new LabeledPoint(2.0, 3.0);
+var B = new LabeledPoint("Origin");
+writeln(A);
+writeln(B);
