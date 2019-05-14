@@ -248,8 +248,8 @@
                ParserContext* context,
                const char*    str) {
 
-    // like USR_FATAL_CONT
-    setupError("parser", __FILE__, __LINE__, 3);
+    // like USR_FATA
+    setupError("parser", __FILE__, __LINE__, 2);
 
     // TODO -- should this begin with error:
     if (!chplParseString) {
@@ -268,6 +268,9 @@
     }
 
     fprintf(stderr, "\n");
+    clean_exit(1);
+
+    USR_STOP();
   }
 }
 

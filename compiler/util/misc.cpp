@@ -379,6 +379,7 @@ static void printErrorFooter(bool guess) {
             "please see %s for instructions.  In the meantime,\n"
             "the filename + line number above may be useful in working around the issue.\n\n",
             help_url);
+    raise(SIGSEGV);
 
     //
     // and exit if it's fatal (isn't it always?)
@@ -604,10 +605,15 @@ static void handleSegFault(int sig) {
 
 
 void startCatchingSignals() {
-  signal(SIGINT,  handleInterrupt);
-  signal(SIGTERM, handleInterrupt);
-  signal(SIGHUP,  handleInterrupt);
-  signal(SIGSEGV, handleSegFault);
+//  signal(SIGINT,  handleInterrupt);
+//  signal(SIGTERM, handleInterrupt);
+//  signal(SIGHUP,  handleInterrupt);
+//  signal(SIGSEGV, handleSegFault);
+  signal(SIGINT,  SIG_DFL);
+  signal(SIGTERM, SIG_DFL);
+  signal(SIGHUP,  SIG_DFL);
+  signal(SIGSEGV, SIG_DFL);
+
 }
 
 

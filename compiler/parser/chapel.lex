@@ -936,6 +936,7 @@ static void processInvalidToken(yyscan_t scanner) {
   YYLTYPE*      yyLloc = yyget_lloc(scanner);
 
   yyerror(yyLloc, &context, "Invalid token");
+  clean_exit(1);
 }
 
 /************************************ | *************************************

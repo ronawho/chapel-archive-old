@@ -1475,7 +1475,7 @@ static void postprocess_args() {
 int main(int argc, char* argv[]) {
   PhaseTracker tracker;
 
-  startCatchingSignals();
+  //startCatchingSignals();
 
   {
     astlocMarker markAstLoc(0, "<internal>");
