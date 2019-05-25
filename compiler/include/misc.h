@@ -100,7 +100,7 @@ void        startCatchingSignals();
 void        stopCatchingSignals();
 
 void        clean_exit(int status) chpl_noreturn;
-void        exit_if_fuzzing(int status) chpl_noreturn;
+void        exit_if_fuzzing(int status);
 
 void        printCallStack();
 void        printCallStackCalls();

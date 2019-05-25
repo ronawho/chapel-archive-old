@@ -70,7 +70,7 @@ void setupError(const char* subdir, const char* filename, int lineno, int tag) {
   err_print         = tag == 5;
   err_ignore        = ignore_warnings && tag == 4;
 
-  exit_immediately  = tag == 1 || tag == 2;
+  exit_immediately  = tag == 1 || tag == 2 || fuzzing_friendly;
   exit_eventually  |= tag == 3;
 }
 
@@ -604,6 +604,7 @@ static void handleSegFault(int sig) {
 
 
 void startCatchingSignals() {
+  if (fuzzing_friendly) return;
   signal(SIGINT,  handleInterrupt);
   signal(SIGTERM, handleInterrupt);
   signal(SIGHUP,  handleInterrupt);
@@ -612,6 +613,7 @@ void startCatchingSignals() {
 
 
 void stopCatchingSignals() {
+  if (fuzzing_friendly) return;
   signal(SIGINT,  SIG_DFL);
   signal(SIGTERM, SIG_DFL);
   signal(SIGHUP,  SIG_DFL);
@@ -639,7 +641,7 @@ void clean_exit(int status) {
 }
 
 void exit_if_fuzzing(int status) {
-#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-  clean_exit(status);
-#endif
+  if (fuzzing_friendly) {
+    clean_exit(status);
+  }
 }

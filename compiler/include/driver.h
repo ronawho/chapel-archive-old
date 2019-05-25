@@ -191,6 +191,7 @@ extern char defaultDist[256];
 extern bool printSearchDirs;
 extern bool printModuleFiles;
 extern bool ignore_warnings;
+extern bool fuzzing_friendly;
 extern bool ignore_errors;
 extern bool ignore_user_errors;
 extern bool ignore_errors_for_pass;
