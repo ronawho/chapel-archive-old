@@ -559,7 +559,7 @@ void yypstate_delete ();
       }
     }
 
-    fprintf(stderr, "\n");
+    fprintf(stderr, "\n"); exit_if_fuzzing(1);
   }
 
 

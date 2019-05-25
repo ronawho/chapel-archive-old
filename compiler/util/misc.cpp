@@ -637,3 +637,9 @@ void clean_exit(int status) {
 
   exit(status);
 }
+
+void exit_if_fuzzing(int status) {
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+  clean_exit(status);
+#endif
+}
